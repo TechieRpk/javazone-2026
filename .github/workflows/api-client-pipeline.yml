@@ -1,0 +1,133 @@
+name: API client pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-client-integration:
+    name: Generate + verify Python client against live app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Build app and generate OpenAPI spec
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Generate Python client
+        run: ./gradlew generatePythonClient --no-daemon
+
+      - name: Patch Python client (auth-wiring gap)
+        run: python3 scripts/patch_python_client.py clients/python/generated
+
+      - name: Install Python client + test deps
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ./clients/python/generated -r tests/integration/requirements.txt
+
+      - name: Start Micronaut app in background
+        run: |
+          nohup ./gradlew run --no-daemon > app.log 2>&1 &
+          echo $! > app.pid
+
+      - name: Wait for app to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/datasets > /dev/null; then
+              echo "App is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "App did not become ready in time"
+          cat app.log
+          exit 1
+
+      - name: Run integration tests against live app
+        env:
+          CATALOG_API_BASE_URL: http://localhost:8080
+          CATALOG_API_TOKEN: javazone-secret
+        run: |
+          source .venv/bin/activate
+          pytest tests/integration -v
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f app.pid ]; then kill "$(cat app.pid)" || true; fi
+
+      - name: Upload app log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-log
+          path: app.log
+
+  typescript-client:
+    name: Generate + compile TypeScript client
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Build app and generate OpenAPI spec
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Generate TypeScript client
+        run: ./gradlew generateTypeScriptClient --no-daemon
+
+      - name: Install and compile
+        working-directory: clients/typescript/generated
+        run: |
+          npm install
+          npm run build
+
+  go-client:
+    name: Generate + compile Go client
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.23'
+
+      - name: Build app and generate OpenAPI spec
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Generate Go client
+        run: ./gradlew generateGoClient --no-daemon
+
+      - name: Compile
+        working-directory: clients/go/generated
+        run: |
+          if [ ! -f go.mod ]; then
+            go mod init github.com/javazone-2026/catalog-client-go
+          fi
+          go mod tidy
+          go build ./...
