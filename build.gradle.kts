@@ -105,11 +105,22 @@ val copyOpenApiSpec by tasks.registering(Copy::class) {
 }
 tasks.named("build") { dependsOn(copyOpenApiSpec) }
 
+fun currentUidGid(): String {
+    val uid = ProcessBuilder("id", "-u").start().let { it.waitFor(); it.inputStream.bufferedReader().readText().trim() }
+    val gid = ProcessBuilder("id", "-g").start().let { it.waitFor(); it.inputStream.bufferedReader().readText().trim() }
+    return "$uid:$gid"
+}
+
 fun registerClientTask(name: String, generator: String, outDir: String, extra: List<String>) =
     tasks.register<Exec>(name) {
         group = "openapi client generation"
         dependsOn(copyOpenApiSpec)
+        // openapi-generator-cli's image runs as root by default; without --user, files it
+        // writes into the bind-mounted directory come out root-owned on Linux hosts (e.g.
+        // GitHub Actions runners), which then blocks later steps (like `go mod tidy`) that
+        // write into the same directory as the unprivileged runner user.
         commandLine(listOf("docker", "run", "--rm",
+            "--user", currentUidGid(),
             "-v", "$rootDir:/local",
             "openapitools/openapi-generator-cli:v7.23.0",
             "generate", "-i", "/local/build/openapi/openapi.yaml",
