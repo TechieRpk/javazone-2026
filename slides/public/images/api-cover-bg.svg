@@ -1,0 +1,62 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1b3d"/>
+      <stop offset="55%" stop-color="#0b1330"/>
+      <stop offset="100%" stop-color="#070a1a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="88%" cy="16%" r="55%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#8fb4ff" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+
+  <!-- request/response link lines: one source (spec) fanning out to three clients — tucked in the top-right corner, clear of the centered title -->
+  <g stroke="#7fb0ff" stroke-opacity="0.45" stroke-width="2" fill="none">
+    <path d="M 1560 150 C 1650 110, 1730 90, 1820 75"/>
+    <path d="M 1560 150 C 1660 175, 1760 205, 1850 235"/>
+    <path d="M 1560 150 C 1620 230, 1680 300, 1730 355"/>
+  </g>
+
+  <!-- animated pulse dots traveling the links -->
+  <g fill="#bcd7ff">
+    <circle r="5" opacity="0.9">
+      <animateMotion dur="4.2s" repeatCount="indefinite" path="M 1560 150 C 1650 110, 1730 90, 1820 75"/>
+    </circle>
+    <circle r="5" opacity="0.9">
+      <animateMotion dur="5.1s" begin="0.6s" repeatCount="indefinite" path="M 1560 150 C 1660 175, 1760 205, 1850 235"/>
+    </circle>
+    <circle r="5" opacity="0.9">
+      <animateMotion dur="4.7s" begin="1.2s" repeatCount="indefinite" path="M 1560 150 C 1620 230, 1680 300, 1730 355"/>
+    </circle>
+  </g>
+
+  <!-- spec node (source) -->
+  <circle cx="1560" cy="150" r="26" fill="#0f1b3d" stroke="#8fb4ff" stroke-width="2.5"/>
+  <text x="1560" y="157" text-anchor="middle" font-family="Fira Code, monospace" font-size="17" fill="#cfe0ff">{ }</text>
+
+  <!-- client nodes -->
+  <g font-family="Fira Code, monospace" font-size="15" fill="#9fc0ff">
+    <circle cx="1820" cy="75" r="15" fill="#0f1b3d" stroke="#6a95e0" stroke-width="2"/>
+    <circle cx="1850" cy="235" r="15" fill="#0f1b3d" stroke="#6a95e0" stroke-width="2"/>
+    <circle cx="1730" cy="355" r="15" fill="#0f1b3d" stroke="#6a95e0" stroke-width="2"/>
+  </g>
+
+  <!-- faint scattered nodes for depth -->
+  <g fill="#4a6bb0" opacity="0.35">
+    <circle cx="260" cy="180" r="4"/>
+    <circle cx="360" cy="760" r="3"/>
+    <circle cx="180" cy="520" r="3"/>
+    <circle cx="1720" cy="150" r="3"/>
+    <circle cx="1800" cy="880" r="4"/>
+    <circle cx="1620" cy="920" r="3"/>
+    <circle cx="120" cy="880" r="3"/>
+  </g>
+</svg>

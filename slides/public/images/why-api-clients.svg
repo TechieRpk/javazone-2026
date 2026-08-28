@@ -1,0 +1,79 @@
+<svg width="1200" height="480" viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc4c4c"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#3a6fd8"/>
+    </marker>
+  </defs>
+
+  <!-- panel divider -->
+  <line x1="600" y1="20" x2="600" y2="460" stroke="#e2e5ec" stroke-width="2"/>
+
+  <!-- LEFT: without a client -->
+  <text x="300" y="40" text-anchor="middle" font-size="22" font-weight="600" fill="#b23a3a">Without a client</text>
+
+  <g font-size="15" fill="#2d2d2d">
+    <rect x="30"  y="90"  width="150" height="46" rx="8" fill="#fdeeee" stroke="#e29a9a"/>
+    <text x="105" y="118" text-anchor="middle">Service A</text>
+
+    <rect x="30"  y="200" width="150" height="46" rx="8" fill="#fdeeee" stroke="#e29a9a"/>
+    <text x="105" y="228" text-anchor="middle">Service B</text>
+
+    <rect x="30"  y="310" width="150" height="46" rx="8" fill="#fdeeee" stroke="#e29a9a"/>
+    <text x="105" y="338" text-anchor="middle">Script C</text>
+  </g>
+
+  <rect x="420" y="200" width="150" height="46" rx="8" fill="#fff5f5" stroke="#c94f4f" stroke-width="2"/>
+  <text x="495" y="228" text-anchor="middle" font-size="15" font-weight="600" fill="#7a2323">API</text>
+
+  <g stroke="#dc4c4c" stroke-width="2" fill="none" marker-end="url(#arrowRed)">
+    <path d="M 180 113 C 280 130, 340 170, 415 210"/>
+    <path d="M 180 223 C 260 223, 340 223, 415 223"/>
+    <path d="M 180 333 C 280 310, 340 270, 415 235"/>
+  </g>
+
+  <g font-size="12.5" fill="#9a4c4c" font-style="italic">
+    <text x="245" y="150">hand-rolled HTTP</text>
+    <text x="255" y="215">hand-rolled HTTP</text>
+    <text x="245" y="300">hand-rolled HTTP</text>
+  </g>
+
+  <text x="300" y="410" text-anchor="middle" font-size="14" fill="#7a2323">
+    3 copies of auth, retries, parsing — 3 places to get it wrong
+  </text>
+
+  <!-- RIGHT: with a client -->
+  <text x="900" y="40" text-anchor="middle" font-size="22" font-weight="600" fill="#2c5199">With a client</text>
+
+  <g font-size="15" fill="#2d2d2d">
+    <rect x="630" y="90"  width="150" height="46" rx="8" fill="#eef3fd" stroke="#a9c0ea"/>
+    <text x="705" y="118" text-anchor="middle">Service A</text>
+
+    <rect x="630" y="200" width="150" height="46" rx="8" fill="#eef3fd" stroke="#a9c0ea"/>
+    <text x="705" y="228" text-anchor="middle">Service B</text>
+
+    <rect x="630" y="310" width="150" height="46" rx="8" fill="#eef3fd" stroke="#a9c0ea"/>
+    <text x="705" y="338" text-anchor="middle">Script C</text>
+  </g>
+
+  <rect x="880" y="200" width="150" height="46" rx="8" fill="#eef3fd" stroke="#5a86d6" stroke-width="2"/>
+  <text x="955" y="223" text-anchor="middle" font-size="14" font-weight="600" fill="#1f3d7a">API</text>
+  <text x="955" y="238" text-anchor="middle" font-size="11" fill="#3a6fd8">client</text>
+
+  <g stroke="#5a86d6" stroke-width="2" fill="none" marker-end="url(#arrowBlue)">
+    <path d="M 780 113 C 830 130, 850 170, 875 210"/>
+    <path d="M 780 223 C 810 223, 840 223, 875 223"/>
+    <path d="M 780 333 C 830 310, 850 270, 875 235"/>
+  </g>
+
+  <rect x="1050" y="200" width="120" height="46" rx="8" fill="#fbfbfb" stroke="#c7c7c7" stroke-width="2"/>
+  <text x="1110" y="228" text-anchor="middle" font-size="15" font-weight="600" fill="#333">API</text>
+
+  <path d="M 1030 223 L 1045 223" stroke="#3a6fd8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+  <text x="900" y="410" text-anchor="middle" font-size="14" fill="#1f3d7a">
+    one typed contract, one place to get it right
+  </text>
+</svg>
