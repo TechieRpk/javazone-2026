@@ -1,0 +1,4 @@
+{
+  "kotlin.java.home": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home",
+  "kotlin.languageServer.path": "/opt/homebrew/bin/kotlin-language-server"
+}
