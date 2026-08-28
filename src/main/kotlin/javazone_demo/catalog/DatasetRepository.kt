@@ -14,13 +14,13 @@ class DatasetRepository {
 
     @PostConstruct
     fun seed() {
-        save(DatasetDTO(name = "orders_daily", owner = "team-payments",
+        save(DatasetDTO(name = "orders_daily", ownerTeam = "team-payments",
             tags = listOf("orders", "daily"), sensitivity = DatasetSensitivity.INTERNAL,
             schemaFields = listOf(FieldDTO("order_id", "STRING"), FieldDTO("total_amount", "DECIMAL"))))
-        save(DatasetDTO(name = "clickstream_raw", owner = "team-web",
+        save(DatasetDTO(name = "clickstream_raw", ownerTeam = "team-web",
             tags = listOf("clickstream", "raw"), sensitivity = DatasetSensitivity.PUBLIC,
             schemaFields = listOf(FieldDTO("session_id", "STRING"), FieldDTO("event_ts", "TIMESTAMP"))))
-        save(DatasetDTO(name = "customer_pii", owner = "team-identity",
+        save(DatasetDTO(name = "customer_pii", ownerTeam = "team-identity",
             tags = listOf("customers", "pii"), sensitivity = DatasetSensitivity.RESTRICTED,
             schemaFields = listOf(FieldDTO("customer_id", "STRING"), FieldDTO("email", "STRING"))))
     }

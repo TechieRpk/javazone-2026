@@ -16,7 +16,7 @@ from catalog_client.models.field_dto import FieldDTO
 def _new_dataset(name: str) -> DatasetDTO:
     return DatasetDTO(
         name=name,
-        owner="team-integration-tests",
+        owner_team="team-integration-tests",
         tags=["test"],
         sensitivity=DatasetSensitivity.INTERNAL,
         schema_fields=[FieldDTO(name="id", type="STRING")],
@@ -39,9 +39,9 @@ def test_create_get_update_delete_roundtrip(api: DatasetsApi):
     assert fetched.name == name
 
     updated_payload = _new_dataset(name)
-    updated_payload.owner = "team-updated"
+    updated_payload.owner_team = "team-updated"
     updated = api.update_dataset(created.id, updated_payload)
-    assert updated.owner == "team-updated"
+    assert updated.owner_team == "team-updated"
 
     api.delete_dataset(created.id)
 
