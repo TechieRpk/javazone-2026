@@ -103,8 +103,25 @@ pytest tests/integration -v
 
 `.github/workflows/api-client-pipeline.yml` runs on every push/PR to `main`:
 builds the app, generates the spec, generates all three clients, patches the
-Python one, starts the app, and runs the integration suite against it — a
-failing test here means the API changed in a way that breaks its clients.
+Python and TypeScript ones, starts the app, and runs the integration suite
+against it — a failing test here means the API changed in a way that breaks
+its clients.
+
+### Publish clients to their own repos
+
+Once the pipeline is green, the generated clients can be shipped out to the
+repos each language team actually consumes — `TechieRpk/catalog-client-python`,
+`-typescript`, and `-go` — each as a PR so the owning team reviews the sync
+rather than it landing silently:
+
+```bash
+scripts/publish_all_clients.sh          # regenerate, patch, and publish all three
+scripts/publish_client.sh python        # or publish a single language
+```
+
+Each run pushes to a fixed `sync/openapi-client` branch per repo, so
+re-running after another API change updates the existing PR instead of
+opening a new one. Uses the local `gh` CLI auth — no extra credentials.
 
 ## Micronaut documentation
 
