@@ -12,6 +12,7 @@ data class DatasetDTO(
     @field:NotBlank val ownerTeam: String,
     @field:NotNull val tags: List<String>,
     @field:NotNull val sensitivity: DatasetSensitivity,
+    @field:NotNull val retentionDays: Int,
     @field:NotNull val schemaFields: List<FieldDTO>,
     val updatedAt: Instant? = null
 )
