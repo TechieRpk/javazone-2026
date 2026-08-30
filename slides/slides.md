@@ -1018,18 +1018,32 @@ class: 'bg-neutral-950'
 <circle r="2.5" class="flow-dot dot-p5" fill="#60a5fa"/>
 </svg>
 
+<div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-32">
+<div class="text-neutral-100 text-sm font-medium">pytest integration suite</div>
+</div>
+
+<svg class="w-8 h-5 shrink-0" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="arrow-p6" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#a1a1aa" stroke-width="2"/></marker></defs>
+<path class="flow-line" d="M2,10 H26" fill="none" stroke="#71717a" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow-p6)"/>
+<circle r="2.5" class="flow-dot dot-p6" fill="#60a5fa"/>
+</svg>
+
 <div class="rounded-xl px-3 py-3 bg-emerald-950 border border-emerald-900 text-center w-32">
-<div class="text-emerald-200 text-sm font-medium">pytest integration suite</div>
+<div class="text-emerald-200 text-sm font-medium">open PR → client repos</div>
 </div>
 
 </div>
 
 <div class="text-center mt-10 text-neutral-400 text-sm">
-<span class="font-mono text-neutral-300">.github/workflows/api-client-pipeline.yml</span> runs this on every push/PR to <span class="font-mono text-neutral-300">main</span>
+<span class="font-mono text-neutral-300">.github/workflows/api-client-pipeline.yml</span> runs build → test on every push/PR to <span class="font-mono text-neutral-300">main</span>; the publish step runs only after a merge
 </div>
 
 <div class="text-center mt-3 text-neutral-200">
 The integration suite drives the <strong>real generated+patched client</strong> — not a mock — against a live instance of the app.
+</div>
+
+<div class="text-center mt-2 text-neutral-200">
+Once merged, a fourth job regenerates all three clients and pushes each to its own <span class="font-mono text-sm text-neutral-300">catalog-client-&lt;lang&gt;</span> repo as a PR — the owning team reviews the sync instead of it landing silently.
 </div>
 
 <style scoped>
@@ -1043,7 +1057,7 @@ The integration suite drives the <strong>real generated+patched client</strong> 
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
-.dot-p1, .dot-p2, .dot-p3, .dot-p4, .dot-p5 {
+.dot-p1, .dot-p2, .dot-p3, .dot-p4, .dot-p5, .dot-p6 {
   offset-path: path('M2,10 H26');
   animation-name: travel-p;
   animation-duration: 1s;
@@ -1053,6 +1067,7 @@ The integration suite drives the <strong>real generated+patched client</strong> 
 .dot-p3 { animation-delay: 0.4s; }
 .dot-p4 { animation-delay: 0.6s; }
 .dot-p5 { animation-delay: 0.8s; }
+.dot-p6 { animation-delay: 1s; }
 @keyframes travel-p {
   0% { offset-distance: 0%; opacity: 0; }
   15% { opacity: 1; }
@@ -1069,6 +1084,15 @@ into one pipeline, running on every push/PR to main. The one thing to
 land: the integration suite exercises the *real* generated+patched
 client, not a hand-written stand-in — so this test can only pass if
 the actual thing a consumer would install still works.
+
+The last box is new: once a change merges to main and all three
+verification jobs pass, a fourth job — publish-clients — regenerates
+every client fresh and pushes it to its own catalog-client-<lang> repo
+as a PR. Point out it's gated on the merge event specifically (`if:
+github.event_name == 'push' && github.ref == 'refs/heads/main'`), so it
+never fires on a PR build — only once a change has actually landed.
+Auth is a repo secret (CLIENT_REPOS_TOKEN); the default GITHUB_TOKEN
+can't push or open PRs on other repos.
 
 Land the transition explicitly: "this isn't a diagram, it's the actual
 workflow in this repo — let's break something for real and watch it
@@ -1094,14 +1118,13 @@ class: 'bg-neutral-950'
 
 <div class="max-w-2xl mx-auto">
 
-```bash {1-2|3|4-6|7-9|10}
+```bash {1-2|3|4-6|7-8|9}
 # 1. API already running — localhost:8080/swagger-ui
 # 2. Rename a field in DatasetDTO.kt — a breaking change
 
 ./gradlew build                       # 3. rebuild + regenerate the spec
 
-./gradlew generatePythonClient        # 4. regenerate + patch + install
-python3 scripts/patch_python_client.py clients/python/generated
+./gradlew generatePythonClient        # 4. regenerate + install
 pip install --force-reinstall --no-deps ./clients/python/generated
 
 pytest tests/integration -v           # 5. run integration tests
@@ -1194,10 +1217,14 @@ is hidden, not skipped:
    Then `./gradlew run` again in Terminal A so the live server is
    running the NEW code too, not the stale pre-rename build.
 
-4. GENERATE THE CLIENT(S) (~30s) — next click. `generatePythonClient`,
-   patch, force-reinstall. Mention in passing that in the full
-   pipeline this happens for Go and TypeScript too (Step 4's slide) —
-   you're only doing Python locally for time.
+4. GENERATE THE CLIENT(S) (~20s) — next click. `generatePythonClient`,
+   force-reinstall. Skipping the patch step here on purpose, for time —
+   it only fixes bearer-auth header wiring, which this failure never
+   reaches (pytest dies at collection, before any HTTP call is made),
+   so cutting it doesn't change what the audience sees. Mention in
+   passing that the full pipeline patches Python (and TypeScript) and
+   generates Go too (Step 4's slide) — you're only doing Python locally
+   for time.
 
 5. RUN INTEGRATION TESTS (~20s) — next click. `pytest tests/integration
    -v` against the now-restarted app — fails immediately. Point at the
