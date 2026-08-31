@@ -40,6 +40,109 @@ layout: default
 class: 'bg-neutral-950'
 ---
 
+<div class="flex justify-between px-16 mb-2">
+
+<div class="relative rounded-xl px-4 py-2 bg-neutral-900 border border-neutral-700 text-neutral-200 text-center text-sm ml-8">
+"got any data<br/>for me?"
+<div class="absolute left-6 -bottom-1.5 w-3 h-3 bg-neutral-900 border-r border-b border-neutral-700 rotate-45"></div>
+</div>
+
+<div class="relative rounded-xl px-4 py-2 bg-neutral-900 border border-neutral-700 text-neutral-200 text-center text-sm mr-8">
+"order up:<br/>one JSON!"
+<div class="absolute right-6 -bottom-1.5 w-3 h-3 bg-neutral-900 border-r border-b border-neutral-700 rotate-45"></div>
+</div>
+
+</div>
+
+<div class="flex items-center justify-center gap-2 mt-6">
+
+<div class="rounded-2xl p-5 bg-blue-950 border border-blue-800 w-44 h-40 flex flex-col items-center justify-center gap-2 text-center">
+<svg class="w-9 h-9 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+<div class="text-blue-100 font-bold">Client</div>
+<div class="text-blue-300/70 text-xs">app, browser, phone…</div>
+</div>
+
+<div class="flex flex-col items-center gap-1 w-36">
+<div class="text-neutral-300 text-xs text-center">"I'd like some data"</div>
+<svg class="w-36 h-20" viewBox="0 0 144 80" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow-req-1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#f59e0b" stroke-width="2"/></marker>
+<marker id="arrow-res-1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#2dd4bf" stroke-width="2"/></marker>
+</defs>
+<path d="M4,40 Q72,4 140,40" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-req-1)" class="flow-line"/>
+<path d="M140,44 Q72,76 4,44" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-res-1)" class="flow-line"/>
+</svg>
+<div class="text-neutral-300 text-xs text-center">"brings it back"</div>
+</div>
+
+<div class="flex flex-col items-center gap-2 w-32 text-center">
+<div class="w-16 h-16 rounded-2xl bg-amber-950 border border-amber-800 flex items-center justify-center text-amber-300">
+<svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+</div>
+<div class="text-amber-200 font-bold text-sm">the API<br/><span class="font-normal text-amber-300/70">(the waiter)</span></div>
+</div>
+
+<div class="flex flex-col items-center gap-1 w-36">
+<div class="text-neutral-300 text-xs text-center">"passes it on"</div>
+<svg class="w-36 h-20" viewBox="0 0 144 80" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow-req-2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#f59e0b" stroke-width="2"/></marker>
+<marker id="arrow-res-2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#2dd4bf" stroke-width="2"/></marker>
+</defs>
+<path d="M4,40 Q72,4 140,40" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-req-2)" class="flow-line"/>
+<path d="M140,44 Q72,76 4,44" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-res-2)" class="flow-line"/>
+</svg>
+<div class="text-neutral-300 text-xs text-center">"here's your JSON"</div>
+</div>
+
+<div class="rounded-2xl p-5 bg-emerald-950 border border-emerald-800 w-44 h-40 flex flex-col items-center justify-center gap-2 text-center">
+<svg class="w-9 h-9 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><rect x="4" y="10" width="16" height="10" rx="2"/></svg>
+<div class="text-emerald-100 font-bold">server</div>
+<div class="text-emerald-300/70 text-xs">the kitchen —<br/>has the data</div>
+</div>
+
+</div>
+
+<div class="text-center mt-8">
+<span class="inline-block px-3 py-1 rounded bg-neutral-800 text-neutral-300 text-sm font-medium">API and API clients shown as a restaurant</span>
+</div>
+
+<div class="text-center mt-3 text-neutral-400 text-sm max-w-2xl mx-auto">
+the client never talks to the kitchen directly —<br/>everything goes through the waiter, who knows the menu (endpoints) and the rules (protocol)
+</div>
+
+<style scoped>
+.flow-line {
+  animation: dash-flow-rest 1s linear infinite;
+}
+@keyframes dash-flow-rest {
+  to { stroke-dashoffset: -12; }
+}
+</style>
+
+<!--
+[0:00–0:35] (35s)  ·  new cold-open slide before the direct-request/API-client comparison — every later timing bracket in this deck shifts by ~35s, not yet renumbered
+
+The gag: the client never talks to the kitchen directly. It orders
+through the waiter (the API), who knows the menu (available
+endpoints) and the house rules (the protocol — REST, GraphQL,
+whatever). The kitchen (server) does the actual work and hands the
+finished dish back to the waiter, who carries it to the table.
+
+Where it stops being cute and starts being useful: that middle layer
+is the whole point. The client doesn't need to know how the kitchen
+is organized, what's in the fridge, or how the dish gets cooked — it
+just needs to know how to place an order and what shape the food
+(data) will arrive in. Change the kitchen's internals and nothing at
+the table has to change, as long as the waiter's still taking the
+same orders.
+-->
+
+---
+layout: default
+class: 'bg-neutral-950'
+---
+
 <div class="grid grid-cols-2 gap-6">
 
 <div class="rounded-2xl p-5 bg-neutral-900 border border-neutral-800">
@@ -189,19 +292,30 @@ layout: default
 class: 'bg-neutral-950'
 ---
 
-<h1 class="text-3xl font-bold text-center mb-6" style="color: #fff;">What hand-written clients cost you</h1>
+<h1 class="text-3xl font-bold text-center mb-8" style="color: #fff;">What hand-written clients cost you</h1>
 
-<div class="grid grid-cols-2 gap-5 mt-6">
+<div class="grid grid-cols-3 gap-5 mt-6">
 
 <v-click>
 
-<div class="rounded-2xl p-5 bg-neutral-900 border border-neutral-800 transition-all duration-500">
-<div class="flex items-center gap-3 mb-2">
-<div class="w-8 h-8 shrink-0 rounded-full bg-rose-950 text-rose-400 flex items-center justify-center font-bold border border-rose-900">1</div>
-<div class="text-neutral-200 font-medium">Trust erodes across teams</div>
+<div class="rounded-2xl p-6 bg-gradient-to-b from-orange-950 to-neutral-900 border border-orange-900 text-center transition-all duration-500 h-56 flex flex-col items-center justify-center">
+<div class="text-5xl mb-3">🔥</div>
+<div class="meme-caption text-2xl">this is fine</div>
+<div class="text-neutral-400 text-xs mt-3">Breaking change hit prod.<br/>Nobody told the client.</div>
 </div>
-<div class="text-neutral-400 text-sm leading-relaxed">
-A Python backend and a TypeScript frontend hit the same endpoint and see different behavior. <span class="text-neutral-300">"The docs say this returns X, but the Go client wraps it differently than described."</span>
+
+</v-click>
+
+<v-click>
+
+<div class="rounded-2xl bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-56 flex flex-col overflow-hidden">
+<div class="flex-1 flex items-center gap-3 px-4 border-b border-neutral-800 opacity-40">
+<span class="text-2xl">✗</span>
+<span class="text-neutral-300 text-sm text-left">Reading the API changelog</span>
+</div>
+<div class="flex-1 flex items-center gap-3 px-4 bg-emerald-950/40">
+<span class="text-2xl">✓</span>
+<span class="text-neutral-100 text-sm text-left font-medium">Finding out from a customer ticket</span>
 </div>
 </div>
 
@@ -209,42 +323,10 @@ A Python backend and a TypeScript frontend hit the same endpoint and see differe
 
 <v-click>
 
-<div class="rounded-2xl p-5 bg-neutral-900 border border-neutral-800 transition-all duration-500">
-<div class="flex items-center gap-3 mb-2">
-<div class="w-8 h-8 shrink-0 rounded-full bg-amber-950 text-amber-400 flex items-center justify-center font-bold border border-amber-900">2</div>
-<div class="text-neutral-200 font-medium">Ambiguous support burden</div>
-</div>
-<div class="text-neutral-400 text-sm leading-relaxed">
-A bug gets reported against one client. Is it client-specific, or a systemic API problem? Nobody can tell without digging — triage slows down and engineers burn time proving a negative.
-</div>
-</div>
-
-</v-click>
-
-<v-click>
-
-<div class="rounded-2xl p-5 bg-neutral-900 border border-neutral-800 transition-all duration-500">
-<div class="flex items-center gap-3 mb-2">
-<div class="w-8 h-8 shrink-0 rounded-full bg-sky-950 text-sky-400 flex items-center justify-center font-bold border border-sky-900">3</div>
-<div class="text-neutral-200 font-medium">Feature lag</div>
-</div>
-<div class="text-neutral-400 text-sm leading-relaxed">
-A new endpoint or field ships. Python gets updated right away because that team is fast-moving — Go and TypeScript quietly fall weeks or months behind.
-</div>
-</div>
-
-</v-click>
-
-<v-click>
-
-<div class="rounded-2xl p-5 bg-neutral-900 border border-neutral-800 transition-all duration-500">
-<div class="flex items-center gap-3 mb-2">
-<div class="w-8 h-8 shrink-0 rounded-full bg-violet-950 text-violet-400 flex items-center justify-center font-bold border border-violet-900">4</div>
-<div class="text-neutral-200 font-medium">Naming and shape inconsistency</div>
-</div>
-<div class="text-neutral-400 text-sm leading-relaxed">
-The same endpoint ends up as <span class="text-neutral-300">getDataset</span>, <span class="text-neutral-300">fetch_dataset</span>, and <span class="text-neutral-300">DatasetGet</span> — different method names, param order, response shapes — because each client was written independently, by a different person, with their own conventions.
-</div>
+<div class="rounded-2xl p-6 bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-56 flex flex-col items-center justify-center">
+<div class="text-5xl mb-3">🔁</div>
+<div class="meme-caption text-xl">same bug,<br/>different day</div>
+<div class="text-neutral-400 text-xs mt-3">Update the client. By hand.<br/>Every single time.</div>
 </div>
 
 </v-click>
@@ -258,39 +340,55 @@ The same endpoint ends up as <span class="text-neutral-300">getDataset</span>, <
 .slidev-vclick-target:not(.slidev-vclick-hidden) {
   transform: translateY(0);
 }
+.meme-caption {
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-shadow:
+    -2px -2px 0 #000, 2px -2px 0 #000,
+    -2px 2px 0 #000, 2px 2px 0 #000,
+    0 3px 6px rgba(0,0,0,0.5);
+}
 </style>
 
 <!--
 [2:00–3:00] (60s)
 
-Four cards, one click per beat — let each one land before moving to
-the next, and paraphrase instead of reading the body text verbatim.
-This slide's job is to make the pain concrete before the next slide
-jumps straight to the fix.
+Three cards, one click per beat, almost no reading required — let each
+land as a beat of humor before naming the real cost out loud. Don't
+read the on-screen captions verbatim, say the fuller version below.
 
-Click 1, trust erosion: once one caller catches the client lying
-about the API's actual behavior, they stop trusting *all* the
-clients, not just the one they caught. "The docs say X, the Go client
-does Y" is a credibility problem, not just a bug.
+Click 1 — on screen: a 🔥 emoji over a bold black-outlined caption
+"THIS IS FINE" (the dog-sitting-in-a-burning-room meme, recreated
+through caption styling only, no dog image), with a small line
+underneath: "Breaking change hit prod. Nobody told the client." The
+meaning: a breaking change reaches production and the first anyone
+hears about it is an alert, not a heads-up — because nothing checked
+whether the client still matched the API before it shipped.
 
-Click 2, ambiguous support burden: a bug report against "the Python
-client" might be a Python bug, or it might be the API itself — and
-until someone reproduces it against a second client, nobody knows
-which. That reproduction step is pure overhead this pipeline removes.
+Click 2 — on screen: the Drake two-panel format, recreated with ✗/✓
+instead of the actual photo. Top panel, dimmed: ✗ "Reading the API
+changelog" (the rejected, sensible option). Bottom panel, highlighted
+green: ✓ "Finding out from a customer ticket" (the "preferred",
+absurd option). The meaning: hand-written clients get updated at the
+speed of whichever team last had spare cycles, not at the speed of
+the API — so in practice, "finding out when it breaks" is what
+actually happens by default, not the changelog-reading everyone
+claims to do.
 
-Click 3, feature lag: hand-written clients get updated at the speed
-of whichever team last had spare cycles, not at the speed of the API.
-Python ships same-day, Go and TypeScript find out weeks later.
+Click 3 — on screen: a single 🔁 emoji over the caption "SAME BUG,
+DIFFERENT DAY", with a small line underneath: "Update the client. By
+hand. Every single time." The meaning: someone, somewhere, is
+manually keeping N clients in sync with 1 API by hand, forever —
+not a one-time cost, a permanent tax on every future API change.
 
-Click 4, naming/shape inconsistency: three developers, three sets of
-conventions, one endpoint modeled three different ways —
-`getDataset`, `fetch_dataset`, `DatasetGet` — because nothing forces
-them to agree.
-
-Land the transition: underneath all four of these is the same root
-cause — the backend and its hand-written clients drift apart, and
-nothing tells you until it breaks in production. That's exactly the
-gap the pipeline in the next slide closes.
+Land the transition: underneath all three is the same root cause —
+the backend and its hand-written clients drift apart, and nothing
+tells you until it breaks in production. That's exactly the gap the
+pipeline in the next slide closes.
 -->
 
 ---
@@ -347,7 +445,7 @@ class: 'bg-neutral-950'
 <div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-900 flex items-center justify-center text-emerald-400">
 <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
 </div>
-<div class="text-emerald-400 text-sm text-center leading-snug">openapi-generator</div>
+<div class="text-emerald-400 text-sm text-center leading-snug">openapi-generator<br/><span class="text-neutral-500 text-xs">OSS CLI · 50+ language generators</span></div>
 </div>
 
 <svg class="shrink-0" style="width: 74px; height: 200px; margin-top: -68px;" viewBox="0 0 74 200" xmlns="http://www.w3.org/2000/svg">
@@ -469,7 +567,12 @@ Click 1: the spec falls out of the API you're already writing — not a
 separate doc, a build artifact.
 
 Click 2: openapi-generator fans that one spec out into Python, Go, and
-TypeScript clients — nobody hand-writes any of the three.
+TypeScript clients — nobody hand-writes any of the three. Worth a
+sentence on the tool itself: it's a mature open-source CLI (a fork of
+Swagger Codegen), not something we built — same spec in, ~50+ language
+generators to choose from. We run it via the official
+`openapitools/openapi-generator-cli` Docker image, pinned to v7.23.0,
+so it's byte-for-byte identical locally and in CI.
 
 Land on the punchline: because every client traces back to the same
 spec, a breaking API change now fails CI instead of breaking a
