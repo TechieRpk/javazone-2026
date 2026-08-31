@@ -28,7 +28,8 @@ class DatasetControllerTest {
     @Test
     fun createWithoutAuthIsRejected() {
         val request = HttpRequest.POST("/datasets", DatasetDTO(name = "test_ds", ownerTeam = "team-x",
-            tags = emptyList(), sensitivity = DatasetSensitivity.PUBLIC, retentionDays = 30, schemaFields = emptyList()))
+            tags = emptyList(), sensitivity = DatasetSensitivity.PUBLIC, retentionDays = 30,
+            refreshIntervalHours = 24, schemaFields = emptyList()))
         val ex = assertThrows(HttpClientResponseException::class.java) { client.toBlocking().exchange<DatasetDTO, Any>(request) }
         assertEquals(HttpStatus.UNAUTHORIZED, ex.status)
     }
