@@ -126,7 +126,11 @@ fun currentUidGid(): String {
     return "$uid:$gid"
 }
 
-fun registerClientTask(name: String, generator: String, outDir: String, extra: List<String>) =
+// patchScript, when given, is run as `python3 <patchScript> <outDir>` right after generation,
+// as part of this same task -- so "generate the client" and "patch its known generator gaps"
+// can never drift apart (e.g. forgetting to patch locally, unlike CI which had it as a
+// separate, easy-to-skip step).
+fun registerClientTask(name: String, generator: String, outDir: String, extra: List<String>, patchScript: String? = null) =
     tasks.register<Exec>(name) {
         group = "openapi client generation"
         dependsOn(copyOpenApiSpec)
@@ -144,17 +148,31 @@ fun registerClientTask(name: String, generator: String, outDir: String, extra: L
                 "-g", generator, "-o", "/local/$outDir"
             ) + extra
         )
+        if (patchScript != null) {
+            doLast {
+                val process = ProcessBuilder("python3", patchScript, outDir)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                val exitCode = process.waitFor()
+                if (exitCode != 0) {
+                    throw GradleException("$patchScript failed with exit code $exitCode")
+                }
+            }
+        }
     }
 
 val generatePythonClient = registerClientTask(
     "generatePythonClient", "python",
-    "clients/python/generated", listOf("--additional-properties=packageName=catalog_client,packageVersion=0.1.0")
+    "clients/python/generated", listOf("--additional-properties=packageName=catalog_client,packageVersion=0.1.0"),
+    patchScript = "scripts/patch_python_client.py"
 )
 val generateTypeScriptClient = registerClientTask(
     "generateTypeScriptClient",
     "typescript-axios",
     "clients/typescript/generated",
-    listOf("--additional-properties=npmName=@javazone-2026/catalog-client,supportsES6=true")
+    listOf("--additional-properties=npmName=@javazone-2026/catalog-client,supportsES6=true"),
+    patchScript = "scripts/patch_typescript_client.py"
 )
 val generateGoClient = registerClientTask(
     "generateGoClient",
