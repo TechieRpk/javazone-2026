@@ -20,6 +20,7 @@ def _new_dataset(name: str) -> DatasetDTO:
         tags=["test"],
         sensitivity=DatasetSensitivity.INTERNAL,
         retention_days=30,
+        refresh_interval_hours=24,
         schema_fields=[FieldDTO(name="id", type="STRING")],
     )
 

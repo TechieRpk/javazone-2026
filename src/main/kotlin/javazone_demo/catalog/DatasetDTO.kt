@@ -13,6 +13,7 @@ data class DatasetDTO(
     @field:NotNull val tags: List<String>,
     @field:NotNull val sensitivity: DatasetSensitivity,
     @field:NotNull val retentionDays: Int,
+    @field:NotNull val refreshIntervalHours: Int,
     @field:NotNull val schemaFields: List<FieldDTO>,
     val updatedAt: Instant? = null
 )
