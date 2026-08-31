@@ -999,7 +999,7 @@ class: 'bg-neutral-950'
 </svg>
 
 <div class="rounded-xl px-3 py-3 bg-amber-950 border border-amber-900 text-center w-28">
-<div class="text-amber-200 text-sm font-medium">patch Python client</div>
+<div class="text-amber-200 text-sm font-medium">patch (automatic)</div>
 </div>
 
 <svg class="w-8 h-5 shrink-0" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
@@ -1218,13 +1218,14 @@ is hidden, not skipped:
    running the NEW code too, not the stale pre-rename build.
 
 4. GENERATE THE CLIENT(S) (~20s) — next click. `generatePythonClient`,
-   force-reinstall. Skipping the patch step here on purpose, for time —
-   it only fixes bearer-auth header wiring, which this failure never
-   reaches (pytest dies at collection, before any HTTP call is made),
-   so cutting it doesn't change what the audience sees. Mention in
-   passing that the full pipeline patches Python (and TypeScript) and
-   generates Go too (Step 4's slide) — you're only doing Python locally
-   for time.
+   force-reinstall. There's no separate patch command to type anymore —
+   `generatePythonClient` now runs `scripts/patch_python_client.py`
+   itself, right after the Docker generation step (a `doLast` on the
+   Gradle task), so it can never be forgotten. Worth a half-sentence:
+   "generating the client already includes patching its known gaps."
+   Mention in passing that the full pipeline does the same for
+   TypeScript and generates Go too (Step 4's slide) — you're only doing
+   Python locally for time.
 
 5. RUN INTEGRATION TESTS (~20s) — next click. `pytest tests/integration
    -v` against the now-restarted app — fails immediately. Point at the

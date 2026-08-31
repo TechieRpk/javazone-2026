@@ -28,9 +28,6 @@ jobs:
       - name: Generate Python client
         run: ./gradlew generatePythonClient --no-daemon
 
-      - name: Patch Python client (auth-wiring gap)
-        run: python3 scripts/patch_python_client.py clients/python/generated
-
       - name: Install Python client + test deps
         run: |
           python3 -m venv .venv
@@ -95,9 +92,6 @@ jobs:
 
       - name: Generate TypeScript client
         run: ./gradlew generateTypeScriptClient --no-daemon
-
-      - name: Patch TypeScript client (axios type-declaration gap)
-        run: python3 scripts/patch_typescript_client.py clients/typescript/generated
 
       - name: Install and compile
         working-directory: clients/typescript/generated
