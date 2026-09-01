@@ -19,9 +19,10 @@ def _new_dataset(name: str) -> DatasetDTO:
         owner_team="team-integration-tests",
         tags=["test"],
         sensitivity=DatasetSensitivity.INTERNAL,
-        retention_days=30,
+        retention_days="30",
         refresh_interval_hours=24,
         schema_fields=[FieldDTO(name="id", type="STRING")],
+        pii_fields=[],
     )
 
 
