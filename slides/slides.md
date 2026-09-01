@@ -24,8 +24,12 @@ fonts:
 
 Javazone 2026 · Lightning Talk
 
+<div class="text-sm text-neutral-500 mt-3">Talk #15 today. If you're still awake, you're doing better than my coffee.</div>
+
 <!--
 Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening talk is about how developers can generate API-clients automatically while they build API.
+
+I agree its quite heavy day with lots of amazing talks. I will try to make it light.
 
 -->
 
@@ -114,11 +118,13 @@ the consumer never talks to the API directly —<br/>everything goes through the
 }
 </style>
 
-<!--
-The consumer (your code) never talks to the API directly. It orders through the API client (the
-waiter), who knows the menu (available endpoints) and the house rules (the protocol — REST, GraphQL, whatever). The API (the kitchen) does the actual work and hands the finished dish back to the client, who carries it to the consumer.
+<!-- Let me start with an everyday example: ordering food at a restaurant. When you sit down, you don't walk into the kitchen and ask the chef directly for what you want. You talk to the waiter. You tell the waiter what you'd like, the waiter goes to the kitchen, the kitchen cooks it, and the waiter brings the finished dish back to your table.
 
-The middle layer is the whole point, and it's exactly what the rest of this talk is about. The consumer doesn't need to know how the API is organized, what's in its database, or how the response gets computed — 
+The waiter is the one who knows the menu — what's actually available to order — and knows the house rules for how orders work: how to ask, what format, what's expected. You don't need to know any of that. You just need to know how to ask the waiter, and what the dish looks like when it arrives.
+
+Now map that onto software. The consumer is you at the table — your code, your app. The API is the kitchen — it does the real work. And the API client is the waiter standing in between: the consumer never talks to the API directly, it orders through the API client, who knows the menu (the available endpoints) and the house rules (the protocol — REST, GraphQL, whatever).
+
+The middle layer is the whole point, and it's exactly what the rest of this talk is about. The consumer doesn't need to know how the API is organized, what's in its database, or how the response gets computed —
 
 it just needs to know how to place an order and what shape the food (data) will arrive in. Change the API's internals and nothing at the table has to change, as long as the client's still taking the same orders — and that "waiter" is a real thing you're about to watch get generated, not hand-written, for the rest of this talk.
 -->
@@ -512,16 +518,20 @@ the clients, through openapi-generator."
 
 one file, flowing constantly into every client, not a one-time hand-off anyone can forget to redo.
 
-the spec falls out of the API you're already writing — not a separate doc, a build artifact.
+the spec falls out of the API you're already writing — not a
+separate doc, a build artifact.
 
-openapi-generator fans that one spec out into Python, Go, and TypeScript clients — nobody hand-writes any of the three. 
+openapi-generator fans that one spec out into Python, Go, and
+TypeScript clients — nobody hand-writes any of the three. 
 
 Open-api-generator: it's a mature open-source CLI (a fork of
-Swagger Codegen), not something we built — same spec in, ~50+ language
-generators to choose from. We run it via the official image,
+Swagger Codegen), not something we built — same spec in, ~50+ language generators to choose from. 
 
- because every client traces back to the same
-spec, a breaking API change now fails CI instead of breaking a consumer silently in prod. SO while releasing a breaking change in API, we know which all clients will fail. 
+We run it via the official
+`openapitools/openapi-generator-cli` Docker image, pinned to v7.23.0,
+so it's byte-for-byte identical locally and in CI.
+
+Because every client traces back to the same spec, a breaking API change now fails CI instead of breaking a consumer silently in prod — while releasing a breaking change, we know exactly which clients will fail. One source of truth, zero drift — "which client is right" stops being a question anyone has to ask. 
 -->
 
 ---
@@ -611,26 +621,19 @@ Four small files — that's the whole API surface this talk generates clients fr
 </style>
 
 <!--
-Four quick clicks, don't over-explain any one of them — this slide is
-scaffolding for the live demo, not content in its own right.
-
-Click 1, Application.kt: this is the file with the two annotations
+Application.kt: this is the file with the two annotations
 that make the rest of the talk possible — @OpenAPIDefinition and
 @SecurityScheme. Everything downstream reads from here.
 
-Click 2, the DTOs: a dataset has an owner, tags, a sensitivity enum
-(PUBLIC/INTERNAL/RESTRICTED), and a list of schema fields. This is the
-shape that gets renamed later to break something on purpose.
+the DTOs: a dataset has an owner, tags, a sensitivity enum
+(PUBLIC/INTERNAL/RESTRICTED), and a list of schema fields. This is the shape that gets renamed later to break something on purpose.
 
-Click 3, DatasetController: the actual REST surface — five endpoints,
-`operationId`s already named deliberately (listDatasets, getDataset,
-etc. — callback to the naming point from two slides ago).
+DatasetController: the actual REST surface — five endpoints,
+`operationId`s already named deliberately (listDatasets, getDataset, etc. — callback to the naming point from two slides ago).
 
-Click 4, ApiTokenFilter: reads flow freely, writes need a bearer
+ApiTokenFilter: reads flow freely, writes need a bearer
 token. This is the split the two demo panels showed earlier.
 
-Land on the punchline: small on purpose. Don't dwell on the file tree
-— the point is just to orient the room before you start typing.
 -->
 
 ---
@@ -728,15 +731,12 @@ pre code, pre code span {
 </style>
 
 <!--
-The key claim on this slide: the spec isn't a doc someone maintains by
-hand and forgets — it falls out of a normal `./gradlew build`, derived
-from annotations already on the controller.
+The spec isn't a doc someone maintains by
+hand and forgets — it falls out of a normal `./gradlew build`, derived from annotations already on the controller.
 
-Click 1: point at the arrow — annotations in, spec out, automatically,
-every single build.
+annotations in, spec out, automatically, every single build.
 
-Click 2: land the line. If you rename a field, the spec changes on
-the next build. No separate "update the docs" step to skip.
+If you rename a field, the spec changes on the next build. No separate "update the docs" step to skip.
 -->
 
 ---
@@ -859,13 +859,28 @@ pre code, pre code span {
 </div>
 
 <!--
-Emphasize the Docker-based generator: it's the *same* command locally
-and in CI, so "works on my machine" doesn't apply to codegen output —
-that's why the animation fans out identically every time.
+I have used Docker-based generator: it's the *same* command locally and in CI, so "works on my machine" doesn't apply to codegen output —
 
-Mention `operationId` deliberately — it's the one place a developer's
-naming choice leaks into every generated client, so it's worth naming
+`operationId` — it's the one place a developer's naming choice leaks into every generated client, so it's worth naming
 things well (`listDatasets`, not `list`).
+
+More on operationId, worth a sentence or two if there's time:
+- It's set explicitly on every endpoint in DatasetController.kt —
+  `@Operation(operationId = "listDatasets")`, `getDataset`,
+  `createDataset`, `updateDataset`, `deleteDataset`. That string is
+  what openapi-generator turns into the method name in every
+  generated client: `datasetsApi.getDataset(id)` in Python,
+  `datasetsApi.getDataset(id)` in TypeScript, `GetDataset(...)` in Go
+  — same verb, idiomatic casing per language.
+- If you don't set it, openapi-generator derives one from the path +
+  HTTP method instead — something like `datasetsIdGet` for
+  `GET /datasets/{id}`. It still works, it's just worse: the method
+  name on every client becomes an accident of routing rather than a
+  deliberate name, and it changes if the path ever changes.
+- So this is a small, one-time authoring cost on the API side that
+  pays out on every consumer, in every language, forever — the same
+  "do it once, upstream" idea as the rest of this talk, just at the
+  level of a single annotation instead of a whole pipeline.
 -->
 
 ---
@@ -873,135 +888,7 @@ layout: default
 class: 'bg-neutral-950'
 ---
 
-<h1 class="text-3xl font-bold text-center mb-2" style="color: #fff;">Step 3 — generated code isn't always perfect</h1>
-
-<div class="text-center text-neutral-400 mb-8">openapi-generator's <span class="text-neutral-200 font-medium">Python</span> client doesn't reliably attach the bearer token to outgoing requests</div>
-
-<div class="flex items-center justify-center gap-6">
-
-<div class="flex flex-col items-center gap-3 w-40">
-<div class="w-16 h-16 rounded-2xl bg-rose-950 border border-rose-900 flex items-center justify-center text-rose-400">
-<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-</div>
-<div class="text-rose-300 text-sm text-center leading-snug">Generated client<br/><span class="text-neutral-500 text-xs">missing the bearer header</span></div>
-</div>
-
-<v-click>
-<div class="flex items-center gap-6">
-
-<svg class="w-24 h-6 shrink-0" viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<marker id="arrow-step3" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-<path d="M0,0 L10,5 L0,10" fill="none" stroke="#a1a1aa" stroke-width="2"/>
-</marker>
-</defs>
-<path class="flow-line" d="M2,12 H96" fill="none" stroke="#71717a" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-step3)"/>
-<circle r="3" class="flow-dot dot-step3" fill="#60a5fa"/>
-</svg>
-
-<div class="flex flex-col items-center gap-3 w-48">
-<div class="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-300 spin-slow">
-<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 12a9 9 0 0 0 15 6.7L21 16"/><path d="M21 22v-6h-6"/></svg>
-</div>
-<div class="text-neutral-300 text-sm text-center leading-snug font-mono">patch_python_client.py<br/><span class="text-neutral-500 text-xs font-sans">idempotent — safe to re-run</span></div>
-</div>
-
-</div>
-</v-click>
-
-<v-click>
-<div class="flex items-center gap-6">
-
-<svg class="w-24 h-6 shrink-0" viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<marker id="arrow-step3b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-<path d="M0,0 L10,5 L0,10" fill="none" stroke="#a1a1aa" stroke-width="2"/>
-</marker>
-</defs>
-<path class="flow-line" d="M2,12 H96" fill="none" stroke="#71717a" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-step3b)"/>
-<circle r="3" class="flow-dot dot-step3b" fill="#60a5fa"/>
-</svg>
-
-<div class="flex flex-col items-center gap-3 w-40">
-<div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-900 flex items-center justify-center text-emerald-400">
-<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-</div>
-<div class="text-emerald-300 text-sm text-center leading-snug">Patched client<br/><span class="text-neutral-500 text-xs">header honored every request</span></div>
-</div>
-
-</div>
-</v-click>
-
-</div>
-
-<v-click>
-
-<div class="text-center mt-10 text-neutral-200">
-
-**Codegen gets you 95% there. Own the last 5% explicitly, in a script CI runs too.**
-
-</div>
-
-</v-click>
-
-<style scoped>
-.flow-line {
-  animation: dash-flow-step3 0.8s linear infinite;
-}
-@keyframes dash-flow-step3 {
-  to { stroke-dashoffset: -12; }
-}
-.flow-dot {
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-.dot-step3 {
-  offset-path: path('M2,12 H96');
-  animation-name: travel-step3;
-  animation-duration: 1.8s;
-}
-.dot-step3b {
-  offset-path: path('M2,12 H96');
-  animation-name: travel-step3;
-  animation-duration: 1.8s;
-}
-@keyframes travel-step3 {
-  0% { offset-distance: 0%; opacity: 0; }
-  10% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
-}
-.spin-slow svg {
-  animation: spin-slow 4s linear infinite;
-}
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
-}
-</style>
-
-<!--
-This is the "honesty" slide — codegen isn't magic, and admitting that
-builds credibility. Name the actual bug: `Configuration.access_token`
-/ `auth_settings()` doesn't reliably attach the bearer token in the
-generated Python client.
-
-Click 1: the patch script — `ApiClient.set_default_header(...)`,
-honored on every request. Point at the spinning icon: this has to
-survive being run after every regeneration, forever.
-
-Click 2: the patched client, header attached, no human has to
-remember to check it first.
-
-Land on the punchline: codegen gets you 95% there, own the last 5%
-explicitly.
--->
-
----
-layout: default
-class: 'bg-neutral-950'
----
-
-<h1 class="text-3xl font-bold text-center mb-10" style="color: #fff;">Step 4 — wire it all into CI</h1>
+<h1 class="text-3xl font-bold text-center mb-10" style="color: #fff;">Step 3 — wire it all into CI</h1>
 
 <div class="flex items-center justify-center gap-1.5">
 
@@ -1220,8 +1107,8 @@ SETUP before you start talking (not part of the timed segment):
   has to be the CURRENT build by step 3 (see below).
 - Terminal B: where you actually type, foreground the whole segment.
 - Browser tab 1: `http://localhost:8080/swagger-ui`, already open.
-- Branch `demo/break-something` checked out, gh CLI authenticated,
-  repo is TechieRpk/javazone-2026.
+- Branch `demo/retention-duration-and-pii-fields` checked out, gh CLI
+  authenticated, repo is TechieRpk/javazone-2026.
 
 THE SIX STEPS, in order — narrate all six in this order; the CI
 trigger happens quietly in the background after step 2 so the wait
@@ -1232,48 +1119,59 @@ is hidden, not skipped:
    show a real JSON response. This is the "before" picture — a normal,
    working API — before anything gets broken.
 
-2. MAKE THE BREAKING CHANGE (~30s) — switch to the editor, rename a
-   field on `DatasetDTO` (e.g. `schemaFields` → `fields`), save (the
-   slide's next click shows this as a comment). The MOMENT this is
-   saved, in a THIRD terminal (or a background job), fire:
-     git commit -am "demo: rename a field (breaking change)"
-     git push -u origin demo/break-something && gh pr create --fill
+2. MAKE THE BREAKING CHANGE (~30s) — switch to the editor, change two
+   things on `DatasetDTO`: `retentionDays` moves from `Int` (days) to
+   a `String` (ISO-8601 duration, e.g. `"P90D"`), and a new required
+   `piiFields: List<String>` is added. Save (the slide's next click
+   shows this as a comment). The MOMENT this is saved, in a THIRD
+   terminal (or a background job), fire:
+     git commit -am "demo: change retentionDays type and add piiFields (breaking change)"
+     git push -u origin demo/retention-duration-and-pii-fields && gh pr create --fill
    Do this quietly — don't narrate it as its own beat yet, that's
    step 6. This is the trick: GitHub Actions now has the full 2-3
    minutes of steps 3-5 to run in the background before you ever look
-   at it.
+   at it. Two changes in one go is deliberate — it shows both flavors
+   of breaking change at once: a type change on an existing field, and
+   a new field that's mandatory, not just added.
 
 3. BUILD + GENERATE THE SPEC (~30s) — advance to the next click. Kill
    Terminal A (Ctrl+C), run `./gradlew build`. Optionally cat/open
-   `build/openapi/openapi.yaml` and point at the renamed field — this
-   is the callback to "the spec is a build artifact" from earlier.
-   Then `./gradlew run` again in Terminal A so the live server is
-   running the NEW code too, not the stale pre-rename build.
+   `build/openapi/openapi.yaml` and point at `retentionDays` now typed
+   `string` and the new required `piiFields` array — this is the
+   callback to "the spec is a build artifact" from earlier. Then
+   `./gradlew run` again in Terminal A so the live server is running
+   the NEW code too, not the stale pre-change build.
 
 4. GENERATE THE CLIENT(S) (~20s) — next click. `generatePythonClient`,
-   force-reinstall. There's no separate patch command to type anymore —
+   then `pip install --force-reinstall --no-deps ./clients/python/generated`.
+   There's no separate patch command to type anymore —
    `generatePythonClient` now runs `scripts/patch_python_client.py`
    itself, right after the Docker generation step (a `doLast` on the
    Gradle task), so it can never be forgotten. Worth a half-sentence:
    "generating the client already includes patching its known gaps."
    Mention in passing that the full pipeline does the same for
-   TypeScript and generates Go too (Step 4's slide) — you're only doing
+   TypeScript and generates Go too (Step 3's slide) — you're only doing
    Python locally for time.
 
 5. RUN INTEGRATION TESTS (~20s) — next click. `pytest tests/integration
-   -v` against the now-restarted app — fails immediately. Point at the
-   FAILED badge: "the generated client's shape changed, so the class/
-   method names this test imports no longer exist — the test
-   collection itself broke, not just an assertion."
+   -v` against the now-restarted app — fails immediately, all three
+   tests. Point at the FAILED badge and read out the actual pydantic
+   errors: `retention_days` — `string_type` (the test still passes an
+   int) and `piiFields` — `missing` (the test never sets it). Land the
+   line: "the generated client's model enforces the new schema, so
+   hand-written test code that wasn't updated fails fast — a runtime
+   validation error, not a stale import."
 
 6. GITHUB ACTIONS STATUS (~60-90s) — the final click reveals the
    "check GitHub Actions" badge — NOW say out loud for the first time
    that you pushed this the moment you made the change, back in
    step 2. Switch to browser tab 2, open the PR. It's had 2-3 minutes
    to run by now:
-     - Finished: point at the red X on python-client-integration,
-       open the failed pytest step in the log — same failure, for
-       real, in CI.
+     - Finished: point at the red X on "Generate + verify Python
+       client against live app" (Go and TypeScript checks stay green —
+       only Python's model is strict about this), open the failed
+       pytest step in the log — same two pydantic ValidationErrors,
+       for real, in CI.
      - Still running: point at the in-progress checks, say "you can
        watch this finish after the talk," narrate the last visible
        step, move on. Never stall waiting on a spinner.
