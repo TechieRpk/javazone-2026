@@ -25,12 +25,8 @@ fonts:
 Javazone 2026 · Lightning Talk
 
 <!--
-Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening tak is about how developers can generate API-clients automatically while they build API.
+Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening talk is about how developers can generate API-clients automatically while they build API.
 
-Hook: "Every team has that one API client someone wrote 18 months ago
-that nobody remembers to update." May be some of us has experience this. 
-
-A pipeline that makes a breaking API change fail CI instead of silently breaking a consumer.
 -->
 
 ---
@@ -119,23 +115,12 @@ the consumer never talks to the API directly —<br/>everything goes through the
 </style>
 
 <!--
-The gag, and this time it's the actual subject of the talk, not just
-a generic "how APIs work" analogy: the consumer (your code) never
-talks to the API directly. It orders through the API client (the
-waiter), who knows the menu (available endpoints) and the house rules
-(the protocol — REST, GraphQL, whatever). The API (the kitchen) does
-the actual work and hands the finished dish back to the client, who
-carries it to the consumer.
+The consumer (your code) never talks to the API directly. It orders through the API client (the
+waiter), who knows the menu (available endpoints) and the house rules (the protocol — REST, GraphQL, whatever). The API (the kitchen) does the actual work and hands the finished dish back to the client, who carries it to the consumer.
 
-Where it stops being cute and starts being useful: that middle layer
-is the whole point, and it's exactly what the rest of this talk is
-about. The consumer doesn't need to know how the API is organized,
-what's in its database, or how the response gets computed — it just
-needs to know how to place an order and what shape the food (data)
-will arrive in. Change the API's internals and nothing at the table
-has to change, as long as the client's still taking the same orders —
-and that "waiter" is a real thing you're about to watch get generated,
-not hand-written, for the rest of this talk.
+The middle layer is the whole point, and it's exactly what the rest of this talk is about. The consumer doesn't need to know how the API is organized, what's in its database, or how the response gets computed — 
+
+it just needs to know how to place an order and what shape the food (data) will arrive in. Change the API's internals and nothing at the table has to change, as long as the client's still taking the same orders — and that "waiter" is a real thing you're about to watch get generated, not hand-written, for the rest of this talk.
 -->
 
 ---
@@ -266,21 +251,17 @@ class: 'bg-neutral-950'
 
 
 <!--
-That one-line client from the previous slide comes from somewhere —
-this is what sits behind it. One API, but three teams each hand-wrote
+ One API, but three teams consuming the API each hand-wrote
 their own client to talk to it: Python, TypeScript, Go.
 
-Click 1, "Same endpoints, three different languages": same HTTP
+"Same endpoints, three different languages": same HTTP
 contract, reimplemented three times by hand.
 
-Click 2, "Each hand-written and maintained separately": no shared
-code between them — a fix or workaround in one doesn't reach the
-other two.
+"Each hand-written and maintained separately": no shared
+code between them — a fix or workaround in one doesn't reach the other two.
 
-Click 3, "A change to the API means three separate fixes": and
-that's only if whoever owns each client actually remembers to make
-it. Keep that in mind — the rest of the talk is about closing that
-gap.
+"A change to the API means three separate fixes": and
+that's only if whoever owns each client actually remembers to make it. Keep that in mind — the rest of the talk is about closing that gap.
 -->
 
 ---
@@ -295,8 +276,7 @@ class: 'bg-neutral-950'
 <v-click>
 
 <div class="rounded-2xl p-6 bg-gradient-to-b from-orange-950 to-neutral-900 border border-orange-900 text-center transition-all duration-500 h-56 flex flex-col items-center justify-center">
-<div class="text-5xl mb-3">🔥</div>
-<div class="meme-caption text-2xl">this is fine</div>
+<img src="/images/this-is-fine-meme.jpeg" class="h-24 rounded-lg mb-3" />
 <div class="text-neutral-400 text-xs mt-3">Breaking change hit prod.<br/>Nobody told the client.</div>
 </div>
 
@@ -351,37 +331,17 @@ class: 'bg-neutral-950'
 </style>
 
 <!--
-Three cards, one click per beat, almost no reading required — let each
-land as a beat of humor before naming the real cost out loud. Don't
-read the on-screen captions verbatim, say the fuller version below.
 
-Click 1 — on screen: a 🔥 emoji over a bold black-outlined caption
-"THIS IS FINE" (the dog-sitting-in-a-burning-room meme, recreated
-through caption styling only, no dog image), with a small line
-underneath: "Breaking change hit prod. Nobody told the client." The
-meaning: a breaking change reaches production and the first anyone
-hears about it is an alert, not a heads-up — because nothing checked
-whether the client still matched the API before it shipped.
+"THIS IS FINE"  : a breaking change reached production and the first anyone hears about it is an alert, not a heads-up — because nothing was checked whether the client still matched the API before it shipped.
 
-Click 2 — on screen: the Drake two-panel format, recreated with ✗/✓
-instead of the actual photo. Top panel, dimmed: ✗ "Reading the API
-changelog" (the rejected, sensible option). Bottom panel, highlighted
-green: ✓ "Finding out from a customer ticket" (the "preferred",
-absurd option). The meaning: hand-written clients get updated at the
+Click 2 — hand-written clients get updated at the
 speed of whichever team last had spare cycles, not at the speed of
-the API — so in practice, "finding out when it breaks" is what
-actually happens by default, not the changelog-reading everyone
-claims to do.
+the API — so in practice, "finding out when it breaks" is what actually happens by default, not the changelog-reading everyone claims to do.
 
-Click 3 — on screen: a single 🔁 emoji over the caption "SAME BUG,
-DIFFERENT DAY", with a small line underneath: "Update the client. By
-hand. Every single time." The meaning: someone, somewhere, is
-manually keeping N clients in sync with 1 API by hand, forever —
-not a one-time cost, a permanent tax on every future API change.
+Click 3 — "Update the client. By
+hand. Every single time." The meaning: someone, somewhere, is manually keeping N clients in sync with 1 API by hand, forever — not a one-time cost, a permanent tax on every future API change.
 
-Land the transition: underneath all three is the same root cause —
-the backend and its hand-written clients drift apart, and nothing
-tells you until it breaks in production. That's exactly the gap the
+the backend and its hand-written clients drift apart, and nothing tells you until it breaks in production. That's exactly the gap the
 pipeline in the next slide closes.
 -->
 
@@ -547,31 +507,21 @@ class: 'bg-neutral-950'
 
 <!--
 "I'll show you how we make this process a bit easier. While you build
-the API, generate the OpenAPI spec — and that spec is what generates
+the API, generate the OpenAPI specification — and that specification is what generates
 the clients, through openapi-generator."
 
-Let the connecting lines run for a second before you talk over them —
-they're not just an arrangement, they're continuous. That's the visual
-argument: one file, flowing constantly into every client, not a
-one-time hand-off anyone can forget to redo.
+one file, flowing constantly into every client, not a one-time hand-off anyone can forget to redo.
 
-Click 1: the spec falls out of the API you're already writing — not a
-separate doc, a build artifact.
+the spec falls out of the API you're already writing — not a separate doc, a build artifact.
 
-Click 2: openapi-generator fans that one spec out into Python, Go, and
-TypeScript clients — nobody hand-writes any of the three. Worth a
-sentence on the tool itself: it's a mature open-source CLI (a fork of
+openapi-generator fans that one spec out into Python, Go, and TypeScript clients — nobody hand-writes any of the three. 
+
+Open-api-generator: it's a mature open-source CLI (a fork of
 Swagger Codegen), not something we built — same spec in, ~50+ language
-generators to choose from. We run it via the official
-`openapitools/openapi-generator-cli` Docker image, pinned to v7.23.0,
-so it's byte-for-byte identical locally and in CI.
+generators to choose from. We run it via the official image,
 
-Land on the punchline: because every client traces back to the same
-spec, a breaking API change now fails CI instead of breaking a
-consumer silently in prod. One source of truth, zero drift — "which
-client is right" stops being a question anyone has to ask. That's the
-whole talk in one animation; the rest of the deck is this, in more
-detail, live — next up, the actual demo project.
+ because every client traces back to the same
+spec, a breaking API change now fails CI instead of breaking a consumer silently in prod. SO while releasing a breaking change in API, we know which all clients will fail. 
 -->
 
 ---
