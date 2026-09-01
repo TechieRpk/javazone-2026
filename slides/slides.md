@@ -24,7 +24,6 @@ fonts:
 
 Javazone 2026 · Lightning Talk
 
-<div class="text-sm text-neutral-500 mt-3">Talk #15 today. If you're still awake, you're doing better than my coffee.</div>
 
 <!--
 Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening talk is about how developers can generate API-clients automatically while they build API.
