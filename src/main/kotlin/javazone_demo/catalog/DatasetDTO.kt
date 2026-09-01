@@ -1,5 +1,6 @@
 package javazone_demo.catalog
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -15,6 +16,6 @@ data class DatasetDTO(
     @field:NotBlank val retentionDays: String,
     @field:NotNull val refreshIntervalHours: Int,
     @field:NotNull val schemaFields: List<FieldDTO>,
-    @field:NotNull val piiFields: List<String>,
+    @field:NotNull @field:JsonInclude(JsonInclude.Include.ALWAYS) val piiFields: List<String>,
     val updatedAt: Instant? = null
 )
