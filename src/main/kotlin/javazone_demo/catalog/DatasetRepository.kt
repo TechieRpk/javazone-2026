@@ -15,17 +15,20 @@ class DatasetRepository {
     @PostConstruct
     fun seed() {
         save(DatasetDTO(name = "orders_daily", ownerTeam = "team-payments",
-            tags = listOf("orders", "daily"), sensitivity = DatasetSensitivity.INTERNAL, retentionDays = 90,
+            tags = listOf("orders", "daily"), sensitivity = DatasetSensitivity.INTERNAL, retentionDays = "P90D",
             refreshIntervalHours = 24,
-            schemaFields = listOf(FieldDTO("order_id", "STRING"), FieldDTO("total_amount", "DECIMAL"))))
+            schemaFields = listOf(FieldDTO("order_id", "STRING"), FieldDTO("total_amount", "DECIMAL")),
+            piiFields = emptyList()))
         save(DatasetDTO(name = "clickstream_raw", ownerTeam = "team-web",
-            tags = listOf("clickstream", "raw"), sensitivity = DatasetSensitivity.PUBLIC, retentionDays = 30,
+            tags = listOf("clickstream", "raw"), sensitivity = DatasetSensitivity.PUBLIC, retentionDays = "P30D",
             refreshIntervalHours = 1,
-            schemaFields = listOf(FieldDTO("session_id", "STRING"), FieldDTO("event_ts", "TIMESTAMP"))))
+            schemaFields = listOf(FieldDTO("session_id", "STRING"), FieldDTO("event_ts", "TIMESTAMP")),
+            piiFields = emptyList()))
         save(DatasetDTO(name = "customer_pii", ownerTeam = "team-identity",
-            tags = listOf("customers", "pii"), sensitivity = DatasetSensitivity.RESTRICTED, retentionDays = 365,
+            tags = listOf("customers", "pii"), sensitivity = DatasetSensitivity.RESTRICTED, retentionDays = "P365D",
             refreshIntervalHours = 24,
-            schemaFields = listOf(FieldDTO("customer_id", "STRING"), FieldDTO("email", "STRING"))))
+            schemaFields = listOf(FieldDTO("customer_id", "STRING"), FieldDTO("email", "STRING")),
+            piiFields = listOf("customer_id", "email")))
     }
 
     fun findAll(): Collection<DatasetDTO> = datasets.values
