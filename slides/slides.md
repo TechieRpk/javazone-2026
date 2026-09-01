@@ -25,8 +25,6 @@ fonts:
 Javazone 2026 · Lightning Talk
 
 <!--
-[0:00–0:30] (30s)  ·  20-minute slot, rebalanced to leave room for a real live GitHub Actions run in the demo segment
-
 Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening tak is about how developers can generate API-clients automatically while they build API.
 
 Hook: "Every team has that one API client someone wrote 18 months ago
@@ -58,8 +56,8 @@ class: 'bg-neutral-950'
 
 <div class="rounded-2xl p-5 bg-blue-950 border border-blue-800 w-44 h-40 flex flex-col items-center justify-center gap-2 text-center">
 <svg class="w-9 h-9 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-<div class="text-blue-100 font-bold">Client</div>
-<div class="text-blue-300/70 text-xs">app, browser, phone…</div>
+<div class="text-blue-100 font-bold">Consumer</div>
+<div class="text-blue-300/70 text-xs">your code —<br/>app, script, service</div>
 </div>
 
 <div class="flex flex-col items-center gap-1 w-36">
@@ -79,7 +77,7 @@ class: 'bg-neutral-950'
 <div class="w-16 h-16 rounded-2xl bg-amber-950 border border-amber-800 flex items-center justify-center text-amber-300">
 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
 </div>
-<div class="text-amber-200 font-bold text-sm">the API<br/><span class="font-normal text-amber-300/70">(the waiter)</span></div>
+<div class="text-amber-200 font-bold text-sm">the API Client<br/><span class="font-normal text-amber-300/70">(the waiter)</span></div>
 </div>
 
 <div class="flex flex-col items-center gap-1 w-36">
@@ -97,18 +95,18 @@ class: 'bg-neutral-950'
 
 <div class="rounded-2xl p-5 bg-emerald-950 border border-emerald-800 w-44 h-40 flex flex-col items-center justify-center gap-2 text-center">
 <svg class="w-9 h-9 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><rect x="4" y="10" width="16" height="10" rx="2"/></svg>
-<div class="text-emerald-100 font-bold">server</div>
-<div class="text-emerald-300/70 text-xs">the kitchen —<br/>has the data</div>
+<div class="text-emerald-100 font-bold">API</div>
+<div class="text-emerald-300/70 text-xs">the kitchen —<br/>does the real work</div>
 </div>
 
 </div>
 
 <div class="text-center mt-8">
-<span class="inline-block px-3 py-1 rounded bg-neutral-800 text-neutral-300 text-sm font-medium">API and API clients shown as a restaurant</span>
+<span class="inline-block px-3 py-1 rounded bg-neutral-800 text-neutral-300 text-sm font-medium">Consumer, API client, and API — shown as a restaurant</span>
 </div>
 
 <div class="text-center mt-3 text-neutral-400 text-sm max-w-2xl mx-auto">
-the client never talks to the kitchen directly —<br/>everything goes through the waiter, who knows the menu (endpoints) and the rules (protocol)
+the consumer never talks to the API directly —<br/>everything goes through the API client, who knows the menu (endpoints) and the rules (protocol)
 </div>
 
 <style scoped>
@@ -121,21 +119,23 @@ the client never talks to the kitchen directly —<br/>everything goes through t
 </style>
 
 <!--
-[0:00–0:35] (35s)  ·  new cold-open slide before the direct-request/API-client comparison — every later timing bracket in this deck shifts by ~35s, not yet renumbered
-
-The gag: the client never talks to the kitchen directly. It orders
-through the waiter (the API), who knows the menu (available
-endpoints) and the house rules (the protocol — REST, GraphQL,
-whatever). The kitchen (server) does the actual work and hands the
-finished dish back to the waiter, who carries it to the table.
+The gag, and this time it's the actual subject of the talk, not just
+a generic "how APIs work" analogy: the consumer (your code) never
+talks to the API directly. It orders through the API client (the
+waiter), who knows the menu (available endpoints) and the house rules
+(the protocol — REST, GraphQL, whatever). The API (the kitchen) does
+the actual work and hands the finished dish back to the client, who
+carries it to the consumer.
 
 Where it stops being cute and starts being useful: that middle layer
-is the whole point. The client doesn't need to know how the kitchen
-is organized, what's in the fridge, or how the dish gets cooked — it
-just needs to know how to place an order and what shape the food
-(data) will arrive in. Change the kitchen's internals and nothing at
-the table has to change, as long as the waiter's still taking the
-same orders.
+is the whole point, and it's exactly what the rest of this talk is
+about. The consumer doesn't need to know how the API is organized,
+what's in its database, or how the response gets computed — it just
+needs to know how to place an order and what shape the food (data)
+will arrive in. Change the API's internals and nothing at the table
+has to change, as long as the client's still taking the same orders —
+and that "waiter" is a real thing you're about to watch get generated,
+not hand-written, for the rest of this talk.
 -->
 
 ---
@@ -207,8 +207,6 @@ pre code, pre code span {
 </style>
 
 <!--
-[0:30–1:15] (45s)
-
 Left: a hand-rolled fetch —
 build the URL, attach the bearer token, check the status, parse JSON,
 manually copy fields into a typed shape. 
@@ -268,8 +266,6 @@ class: 'bg-neutral-950'
 
 
 <!--
-[1:15–2:00] (45s)
-
 That one-line client from the previous slide comes from somewhere —
 this is what sits behind it. One API, but three teams each hand-wrote
 their own client to talk to it: Python, TypeScript, Go.
@@ -355,8 +351,6 @@ class: 'bg-neutral-950'
 </style>
 
 <!--
-[2:00–3:00] (60s)
-
 Three cards, one click per beat, almost no reading required — let each
 land as a beat of humor before naming the real cost out loud. Don't
 read the on-screen captions verbatim, say the fuller version below.
@@ -552,8 +546,6 @@ class: 'bg-neutral-950'
 </style>
 
 <!--
-[3:00–4:15] (75s)  ·  this slide now carries the whole "fix" beat solo, no separate diagram slide follows it
-
 "I'll show you how we make this process a bit easier. While you build
 the API, generate the OpenAPI spec — and that spec is what generates
 the clients, through openapi-generator."
@@ -669,8 +661,6 @@ Four small files — that's the whole API surface this talk generates clients fr
 </style>
 
 <!--
-[4:15–5:15] (60s)
-
 Four quick clicks, don't over-explain any one of them — this slide is
 scaffolding for the live demo, not content in its own right.
 
@@ -788,8 +778,6 @@ pre code, pre code span {
 </style>
 
 <!--
-[5:15–6:25] (70s)
-
 The key claim on this slide: the spec isn't a doc someone maintains by
 hand and forgets — it falls out of a normal `./gradlew build`, derived
 from annotations already on the controller.
@@ -921,8 +909,6 @@ pre code, pre code span {
 </div>
 
 <!--
-[6:25–7:35] (70s)
-
 Emphasize the Docker-based generator: it's the *same* command locally
 and in CI, so "works on my machine" doesn't apply to codegen output —
 that's why the animation fans out identically every time.
@@ -1044,8 +1030,6 @@ class: 'bg-neutral-950'
 </style>
 
 <!--
-[7:35–8:55] (80s)
-
 This is the "honesty" slide — codegen isn't magic, and admitting that
 builds credibility. Name the actual bug: `Configuration.access_token`
 / `auth_settings()` doesn't reliably attach the bearer token in the
@@ -1180,8 +1164,6 @@ Once merged, a fourth job regenerates all three clients and pushes each to its o
 </style>
 
 <!--
-[8:55–9:55] (60s)
-
 Point along the diagram left to right — this is Steps 1–3 chained
 into one pipeline, running on every push/PR to main. The one thing to
 land: the integration suite exercises the *real* generated+patched
@@ -1281,8 +1263,6 @@ if the shape changes, the test collection itself breaks.
 </style>
 
 <!--
-[9:55–14:10] (4:15)  ·  THE CENTERPIECE — six numbered beats, matching the badges on the slide. Rehearse this exact sequence beforehand; know your actual measured CI runtime (~2-4 min) going in.
-
 SETUP before you start talking (not part of the timed segment):
 - Terminal A, running in the background the whole time: `./gradlew run`
   — the app on :8080. pytest defaults to CATALOG_API_BASE_URL=
@@ -1408,8 +1388,6 @@ class: 'text-center bg-neutral-950'
 </style>
 
 <!--
-[14:10–15:10] (60s)
-
 Don't just re-read the bullets — compress each into a half-sentence
 and let the slide carry the detail, one click per row. This is also
 where you can name what generalizes beyond this demo: any team with
@@ -1435,8 +1413,6 @@ class: 'text-center bg-neutral-950'
 </div>
 
 <!--
-[15:10–16:10] (60s)  ·  lands at 16:10 of 20:00 — ~4 min slack left for CI variance/Q&A; if the live demo overran, this is the slide to compress, not the demo itself
-
 Point at the URL and QR code, invite questions, stop talking.
 -->
 
