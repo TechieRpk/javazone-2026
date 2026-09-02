@@ -23,13 +23,13 @@ fonts:
 <br>
 
 Javazone 2026 · Lightning Talk
+<br><br>Rupinder Kaur
 
 
 <!--
-Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. This lightening talk is about how developers can generate API-clients automatically while they build API.
+Hi! My name is Rupinder. Working in Statistisk Sentralbyrå. In this lightening talk I am going to talk about how an open-api specification can be used to geneerate an API client.
 
-I agree its quite heavy day with lots of amazing talks. I will try to make it light.
-
+In our organisation, we work a lot together with statisticians. These teams are working mainly on python codebase. WHen we are building APIs for them and also building API-clients in python so that they can easily consume the API. 
 -->
 
 ---
@@ -274,37 +274,108 @@ layout: default
 class: 'bg-neutral-950'
 ---
 
+<h1 class="text-3xl font-bold text-center mb-2" style="color: #fff;">A breaking change, from the client's side</h1>
+
+<div class="text-center text-neutral-400 mb-8">The API adds a new <span class="text-neutral-200 font-medium">required</span> field — <span class="font-mono text-neutral-200">refreshIntervalHours</span>. Same client file, before and after.</div>
+
+<div class="grid grid-cols-2 gap-6">
+
+<div class="rounded-2xl p-5 bg-red-950/40 border border-red-900">
+
+<div class="text-red-400 font-medium mb-3">Before — client doesn't know about the new field</div>
+
+```python
+def _new_dataset(name: str) -> DatasetDTO:
+    return DatasetDTO(
+        name=name,
+        owning_team="team-integration-tests",
+        tags=["test"],
+        sensitivity=DatasetSensitivity.INTERNAL,
+        retention_days=30,
+        schema_fields=[FieldDTO(name="id", type="STRING")],
+    )
+```
+
+</div>
+
+<div class="rounded-2xl p-5 bg-emerald-950/40 border border-emerald-900">
+
+<div class="text-emerald-400 font-medium mb-3">After — client passes the new field</div>
+
+```python
+def _new_dataset(name: str) -> DatasetDTO:
+    return DatasetDTO(
+        name=name,
+        owning_team="team-integration-tests",
+        tags=["test"],
+        sensitivity=DatasetSensitivity.INTERNAL,
+        retention_days=30,
+        refresh_interval_hours=24,
+        schema_fields=[FieldDTO(name="id", type="STRING")],
+    )
+```
+
+</div>
+
+</div>
+
+<div class="text-center mt-8 text-neutral-300">
+One new required field is the entire diff between a red build and a green one.
+</div>
+
+<style scoped>
+pre {
+  background-color: #18181b !important;
+  border: 1px solid #27272a;
+}
+pre code, pre code span {
+  color: #e4e4e7 !important;
+}
+</style>
+
+<!--
+This is the moment from the demo, frozen as a slide: same consumer file,
+`_new_dataset()`, on either side of a new required field landing on the
+API.
+
+Left: the API added `refreshIntervalHours` as a required field on
+DatasetDTO. The regenerated pydantic model now requires it too —
+pydantic validates on construction, so this fails before a single HTTP
+request goes out. The error names the exact field that's missing.
+
+Right: one new keyword argument in the client, `refresh_interval_hours`,
+and the same suite goes green. This is the fix a real client-owning
+team would push after seeing the left panel in their own CI — not
+required fields being silently optional client-side, or requests
+failing at the API instead of at construction time.
+
+The point isn't the diff size — it's *when* you find out. A new
+required field is arguably the easiest breaking change to miss by eye,
+which is exactly why letting the type system catch it beats a changelog
+nobody reads. Next slide zooms out from this one example to the
+recurring cost of hand-written clients in general.
+-->
+
+---
+layout: default
+class: 'bg-neutral-950'
+---
+
 <h1 class="text-3xl font-bold text-center mb-8" style="color: #fff;">What hand-written clients cost you</h1>
 
-<div class="grid grid-cols-3 gap-5 mt-6">
+<div class="grid grid-cols-2 gap-5 mt-6">
 
 <v-click>
 
-<div class="rounded-2xl p-6 bg-gradient-to-b from-orange-950 to-neutral-900 border border-orange-900 text-center transition-all duration-500 h-56 flex flex-col items-center justify-center">
-<img src="/images/this-is-fine-meme.jpeg" class="h-24 rounded-lg mb-3" />
-<div class="text-neutral-400 text-xs mt-3">Breaking change hit prod.<br/>Nobody told the client.</div>
+<div class="rounded-2xl bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-72 flex flex-col items-center justify-center overflow-hidden">
+<img src="/images/prod-failure.png" class="w-full h-full object-cover" />
 </div>
 
 </v-click>
 
 <v-click>
 
-<div class="rounded-2xl bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-56 flex flex-col overflow-hidden">
-<div class="flex-1 flex items-center gap-3 px-4 border-b border-neutral-800 opacity-40">
-<span class="text-2xl">✗</span>
-<span class="text-neutral-300 text-sm text-left">Reading the API changelog</span>
-</div>
-<div class="flex-1 flex items-center gap-3 px-4 bg-emerald-950/40">
-<span class="text-2xl">✓</span>
-<span class="text-neutral-100 text-sm text-left font-medium">Finding out from a customer ticket</span>
-</div>
-</div>
-
-</v-click>
-
-<v-click>
-
-<div class="rounded-2xl p-6 bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-56 flex flex-col items-center justify-center">
+<div class="rounded-2xl p-6 bg-neutral-900 border border-neutral-800 text-center transition-all duration-500 h-72 flex flex-col items-center justify-center">
 <div class="text-5xl mb-3">🔁</div>
 <div class="meme-caption text-xl">same bug,<br/>different day</div>
 <div class="text-neutral-400 text-xs mt-3">Update the client. By hand.<br/>Every single time.</div>
@@ -337,16 +408,21 @@ class: 'bg-neutral-950'
 
 <!--
 
-"THIS IS FINE"  : a breaking change reached production and the first anyone hears about it is an alert, not a heads-up — because nothing was checked whether the client still matched the API before it shipped.
+Click 1 — the changelog sits there, unread for three weeks, right next
+to production actively on fire. "It was documented" is technically
+true and completely useless — a changelog nobody reads isn't a safety
+net, it's a paper trail you check after the incident, not before it.
+Hand-written clients get updated at the speed of whichever team last
+had spare cycles, not at the speed of the API, so "finding out when it
+breaks" is what actually happens by default.
 
-Click 2 — hand-written clients get updated at the
-speed of whichever team last had spare cycles, not at the speed of
-the API — so in practice, "finding out when it breaks" is what actually happens by default, not the changelog-reading everyone claims to do.
+Click 2 — "Update the client. By hand. Every single time." The
+meaning: someone, somewhere, is manually keeping N clients in sync
+with 1 API by hand, forever — not a one-time cost, a permanent tax on
+every future API change.
 
-Click 3 — "Update the client. By
-hand. Every single time." The meaning: someone, somewhere, is manually keeping N clients in sync with 1 API by hand, forever — not a one-time cost, a permanent tax on every future API change.
-
-the backend and its hand-written clients drift apart, and nothing tells you until it breaks in production. That's exactly the gap the
+the backend and its hand-written clients drift apart, and nothing
+tells you until it breaks in production. That's exactly the gap the
 pipeline in the next slide closes.
 -->
 
@@ -400,11 +476,17 @@ class: 'bg-neutral-950'
 <circle r="3" class="flow-dot dot-fix" fill="#60a5fa"/>
 </svg>
 
-<div class="flex flex-col items-center gap-3">
+<div class="flex flex-col items-center gap-3 relative">
 <div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-900 flex items-center justify-center text-emerald-400">
 <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
 </div>
 <div class="text-emerald-400 text-sm text-center leading-snug">openapi-generator<br/><span class="text-neutral-500 text-xs">OSS CLI · 50+ language generators</span></div>
+
+<div class="absolute left-1/2 top-full mt-3 w-56 -translate-x-1/2 rotate-1 rounded-lg bg-neutral-900 border border-neutral-700 shadow-2xl p-1.5 z-10">
+<img src="/images/open-api-generator.png" class="rounded w-full block" />
+<div class="text-neutral-400 text-[10px] text-center mt-1">github.com/OpenAPITools/openapi-generator</div>
+</div>
+
 </div>
 
 <svg class="shrink-0" style="width: 74px; height: 200px; margin-top: -68px;" viewBox="0 0 74 200" xmlns="http://www.w3.org/2000/svg">
@@ -445,16 +527,6 @@ class: 'bg-neutral-950'
 </v-click>
 
 </div>
-
-<v-click>
-
-<div class="text-center mt-10 text-neutral-200">
-
-**If the API changes in a way that breaks a client, CI fails instead of a consumer breaking silently in prod.**
-
-</div>
-
-</v-click>
 
 <style scoped>
 .slidev-vclick-target {
@@ -511,6 +583,26 @@ class: 'bg-neutral-950'
 </style>
 
 <!--
+Background on OpenAPI itself, if the audience needs the grounding:
+
+The OpenAPI Specification (formerly known as Swagger Specification) is
+a standardized, language-agnostic way to describe RESTful APIs. It's
+essentially a blueprint that documents exactly how an API works, in a
+format both humans and machines can read.
+
+What it describes — an OpenAPI spec (usually a YAML or JSON file) lays
+out:
+- Endpoints — available paths/URLs (e.g., /users/{id})
+- HTTP methods — GET, POST, PUT, DELETE, etc. for each endpoint
+- Parameters — query params, path params, headers, request bodies
+- Request/response formats — data types, required fields, example
+  payloads
+- Authentication — how to authenticate (API keys, OAuth, bearer
+  tokens)
+- Response codes — what status codes mean (200, 404, 500, etc.)
+- Data models/schemas — reusable object definitions (e.g., what a
+  "User" object looks like)
+
 "I'll show you how we make this process a bit easier. While you build
 the API, generate the OpenAPI specification — and that specification is what generates
 the clients, through openapi-generator."
@@ -849,13 +941,7 @@ pre code, pre code span {
 }
 </style>
 
-<div class="max-w-3xl mx-auto mt-6 text-sm text-neutral-400">
 
-- Shells out to the official `openapitools/openapi-generator-cli` Docker image
-- Same command, identical output locally and in CI
-- Class/method names come straight from `@Operation(operationId = "...")`
-
-</div>
 
 <!--
 I have used Docker-based generator: it's the *same* command locally and in CI, so "works on my machine" doesn't apply to codegen output —
@@ -889,7 +975,7 @@ class: 'bg-neutral-950'
 
 <h1 class="text-3xl font-bold text-center mb-10" style="color: #fff;">Step 3 — wire it all into CI</h1>
 
-<div class="flex items-center justify-center gap-1.5">
+<div class="flex items-center justify-center gap-1.5 mt-16">
 
 <div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-24">
 <div class="text-neutral-100 text-sm font-medium">build</div>
@@ -921,8 +1007,8 @@ class: 'bg-neutral-950'
 <circle r="2.5" class="flow-dot dot-p3" fill="#60a5fa"/>
 </svg>
 
-<div class="rounded-xl px-3 py-3 bg-amber-950 border border-amber-900 text-center w-28">
-<div class="text-amber-200 text-sm font-medium">patch (automatic)</div>
+<div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-24">
+<div class="text-neutral-100 text-sm font-medium">run app</div>
 </div>
 
 <svg class="w-8 h-5 shrink-0" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
@@ -931,8 +1017,8 @@ class: 'bg-neutral-950'
 <circle r="2.5" class="flow-dot dot-p4" fill="#60a5fa"/>
 </svg>
 
-<div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-24">
-<div class="text-neutral-100 text-sm font-medium">run app</div>
+<div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-32">
+<div class="text-neutral-100 text-sm font-medium">pytest integration suite</div>
 </div>
 
 <svg class="w-8 h-5 shrink-0" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
@@ -941,33 +1027,12 @@ class: 'bg-neutral-950'
 <circle r="2.5" class="flow-dot dot-p5" fill="#60a5fa"/>
 </svg>
 
-<div class="rounded-xl px-3 py-3 bg-neutral-900 border border-neutral-800 text-center w-32">
-<div class="text-neutral-100 text-sm font-medium">pytest integration suite</div>
-</div>
-
-<svg class="w-8 h-5 shrink-0" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
-<defs><marker id="arrow-p6" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#a1a1aa" stroke-width="2"/></marker></defs>
-<path class="flow-line" d="M2,10 H26" fill="none" stroke="#71717a" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow-p6)"/>
-<circle r="2.5" class="flow-dot dot-p6" fill="#60a5fa"/>
-</svg>
-
 <div class="rounded-xl px-3 py-3 bg-emerald-950 border border-emerald-900 text-center w-32">
 <div class="text-emerald-200 text-sm font-medium">open PR → client repos</div>
 </div>
 
 </div>
 
-<div class="text-center mt-10 text-neutral-400 text-sm">
-<span class="font-mono text-neutral-300">.github/workflows/api-client-pipeline.yml</span> runs build → test on every push/PR to <span class="font-mono text-neutral-300">main</span>; the publish step runs only after a merge
-</div>
-
-<div class="text-center mt-3 text-neutral-200">
-The integration suite drives the <strong>real generated+patched client</strong> — not a mock — against a live instance of the app.
-</div>
-
-<div class="text-center mt-2 text-neutral-200">
-Once merged, a fourth job regenerates all three clients and pushes each to its own <span class="font-mono text-sm text-neutral-300">catalog-client-&lt;lang&gt;</span> repo as a PR — the owning team reviews the sync instead of it landing silently.
-</div>
 
 <style scoped>
 .flow-line {
@@ -980,7 +1045,7 @@ Once merged, a fourth job regenerates all three clients and pushes each to its o
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
-.dot-p1, .dot-p2, .dot-p3, .dot-p4, .dot-p5, .dot-p6 {
+.dot-p1, .dot-p2, .dot-p3, .dot-p4, .dot-p5 {
   offset-path: path('M2,10 H26');
   animation-name: travel-p;
   animation-duration: 1s;
@@ -990,7 +1055,6 @@ Once merged, a fourth job regenerates all three clients and pushes each to its o
 .dot-p3 { animation-delay: 0.4s; }
 .dot-p4 { animation-delay: 0.6s; }
 .dot-p5 { animation-delay: 0.8s; }
-.dot-p6 { animation-delay: 1s; }
 @keyframes travel-p {
   0% { offset-distance: 0%; opacity: 0; }
   15% { opacity: 1; }
@@ -1022,164 +1086,6 @@ demo.
 -->
 
 ---
-layout: default
-class: 'bg-neutral-950'
----
-
-<h1 class="text-3xl font-bold text-center mb-6" style="color: #fff;">Show, don't tell: break something</h1>
-
-<div class="flex justify-center gap-3 mb-4 text-xs">
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">1 API</span>
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">2 break</span>
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">3 build+spec</span>
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">4 generate</span>
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">5 test</span>
-<span class="px-2 py-1 rounded bg-neutral-800 text-neutral-400">6 CI</span>
-</div>
-
-<div class="max-w-2xl mx-auto">
-
-```bash {1-2|3|4-6|7-8|9}
-# 1. API already running — localhost:8080/swagger-ui
-# 2. Rename a field in DatasetDTO.kt — a breaking change
-
-./gradlew build                       # 3. rebuild + regenerate the spec
-
-./gradlew generatePythonClient        # 4. regenerate + install
-pip install --force-reinstall --no-deps ./clients/python/generated
-
-pytest tests/integration -v           # 5. run integration tests
-```
-
-</div>
-
-<style scoped>
-pre {
-  background-color: #18181b !important;
-  border: 1px solid #27272a;
-}
-pre code, pre code span {
-  color: #e4e4e7 !important;
-}
-</style>
-
-<v-click>
-
-<div class="flex justify-center mt-5">
-<div class="rounded-full px-5 py-2 bg-rose-950 border border-rose-800 text-rose-300 font-mono font-bold text-lg pulse-fail">
-🔴 FAILED
-</div>
-</div>
-
-</v-click>
-
-<v-click>
-
-<div class="flex justify-center mt-4">
-<div class="rounded-full px-5 py-2 bg-neutral-900 border border-neutral-700 text-neutral-300 font-mono text-sm">
-6. git push && gh pr create — check GitHub Actions →
-</div>
-</div>
-
-</v-click>
-
-<div class="text-center mt-6 text-neutral-400 text-sm max-w-2xl mx-auto">
-Class and method names in the test come from the <strong class="text-neutral-200">generated</strong> client —
-if the shape changes, the test collection itself breaks.
-</div>
-
-<style scoped>
-.pulse-fail {
-  animation: pulse-fail 1.4s ease-in-out infinite;
-}
-@keyframes pulse-fail {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(1.04); }
-}
-</style>
-
-<!--
-SETUP before you start talking (not part of the timed segment):
-- Terminal A, running in the background the whole time: `./gradlew run`
-  — the app on :8080. pytest defaults to CATALOG_API_BASE_URL=
-  http://localhost:8080, so this has to be up before step 5, and it
-  has to be the CURRENT build by step 3 (see below).
-- Terminal B: where you actually type, foreground the whole segment.
-- Browser tab 1: `http://localhost:8080/swagger-ui`, already open.
-- Branch `demo/retention-duration-and-pii-fields` checked out, gh CLI
-  authenticated, repo is TechieRpk/javazone-2026.
-
-THE SIX STEPS, in order — narrate all six in this order; the CI
-trigger happens quietly in the background after step 2 so the wait
-is hidden, not skipped:
-
-1. SHOW THE API (~30s) — switch to the browser tab, swagger-ui is
-   already loaded. Expand GET /datasets, hit "Try it out" → Execute,
-   show a real JSON response. This is the "before" picture — a normal,
-   working API — before anything gets broken.
-
-2. MAKE THE BREAKING CHANGE (~30s) — switch to the editor, change two
-   things on `DatasetDTO`: `retentionDays` moves from `Int` (days) to
-   a `String` (ISO-8601 duration, e.g. `"P90D"`), and a new required
-   `piiFields: List<String>` is added. Save (the slide's next click
-   shows this as a comment). The MOMENT this is saved, in a THIRD
-   terminal (or a background job), fire:
-     git commit -am "demo: change retentionDays type and add piiFields (breaking change)"
-     git push -u origin demo/retention-duration-and-pii-fields && gh pr create --fill
-   Do this quietly — don't narrate it as its own beat yet, that's
-   step 6. This is the trick: GitHub Actions now has the full 2-3
-   minutes of steps 3-5 to run in the background before you ever look
-   at it. Two changes in one go is deliberate — it shows both flavors
-   of breaking change at once: a type change on an existing field, and
-   a new field that's mandatory, not just added.
-
-3. BUILD + GENERATE THE SPEC (~30s) — advance to the next click. Kill
-   Terminal A (Ctrl+C), run `./gradlew build`. Optionally cat/open
-   `build/openapi/openapi.yaml` and point at `retentionDays` now typed
-   `string` and the new required `piiFields` array — this is the
-   callback to "the spec is a build artifact" from earlier. Then
-   `./gradlew run` again in Terminal A so the live server is running
-   the NEW code too, not the stale pre-change build.
-
-4. GENERATE THE CLIENT(S) (~20s) — next click. `generatePythonClient`,
-   then `pip install --force-reinstall --no-deps ./clients/python/generated`.
-   There's no separate patch command to type anymore —
-   `generatePythonClient` now runs `scripts/patch_python_client.py`
-   itself, right after the Docker generation step (a `doLast` on the
-   Gradle task), so it can never be forgotten. Worth a half-sentence:
-   "generating the client already includes patching its known gaps."
-   Mention in passing that the full pipeline does the same for
-   TypeScript and generates Go too (Step 3's slide) — you're only doing
-   Python locally for time.
-
-5. RUN INTEGRATION TESTS (~20s) — next click. `pytest tests/integration
-   -v` against the now-restarted app — fails immediately, all three
-   tests. Point at the FAILED badge and read out the actual pydantic
-   errors: `retention_days` — `string_type` (the test still passes an
-   int) and `piiFields` — `missing` (the test never sets it). Land the
-   line: "the generated client's model enforces the new schema, so
-   hand-written test code that wasn't updated fails fast — a runtime
-   validation error, not a stale import."
-
-6. GITHUB ACTIONS STATUS (~60-90s) — the final click reveals the
-   "check GitHub Actions" badge — NOW say out loud for the first time
-   that you pushed this the moment you made the change, back in
-   step 2. Switch to browser tab 2, open the PR. It's had 2-3 minutes
-   to run by now:
-     - Finished: point at the red X on "Generate + verify Python
-       client against live app" (Go and TypeScript checks stay green —
-       only Python's model is strict about this), open the failed
-       pytest step in the log — same two pydantic ValidationErrors,
-       for real, in CI.
-     - Still running: point at the in-progress checks, say "you can
-       watch this finish after the talk," narrate the last visible
-       step, move on. Never stall waiting on a spinner.
-
-Afterward: close the PR without merging, delete the branch — main was
-never touched.
--->
-
----
 layout: center
 class: 'text-center bg-neutral-950'
 ---
@@ -1199,13 +1105,6 @@ class: 'text-center bg-neutral-950'
 <div class="flex items-start gap-3 rounded-xl p-3 bg-neutral-900 border border-neutral-800">
 <svg class="w-5 h-5 mt-0.5 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
 <span class="text-neutral-200">The spec should be a build artifact, derived from annotated code</span>
-</div>
-</v-click>
-
-<v-click>
-<div class="flex items-start gap-3 rounded-xl p-3 bg-neutral-900 border border-neutral-800">
-<svg class="w-5 h-5 mt-0.5 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-<span class="text-neutral-200">Codegen has gaps — patch them explicitly and idempotently, don't fork the generator</span>
 </div>
 </v-click>
 
