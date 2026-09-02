@@ -17,6 +17,7 @@ def _new_dataset(name: str) -> DatasetDTO:
     return DatasetDTO(
         name=name,
         owning_team="team-integration-tests",
+        sourceSystem="postgres",
         tags=["test"],
         sensitivity=DatasetSensitivity.INTERNAL,
         retention_days=30,

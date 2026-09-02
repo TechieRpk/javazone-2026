@@ -10,6 +10,7 @@ data class DatasetDTO(
     val id: Long? = null,
     @field:NotBlank val name: String,
     @field:NotBlank val owningTeam: String,
+    @field:NotBlank val sourceSystem: String,
     @field:NotNull val tags: List<String>,
     @field:NotNull val sensitivity: DatasetSensitivity,
     @field:NotNull val retentionDays: Int,

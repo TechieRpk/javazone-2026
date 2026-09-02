@@ -14,15 +14,15 @@ class DatasetRepository {
 
     @PostConstruct
     fun seed() {
-        save(DatasetDTO(name = "orders_daily", owningTeam = "team-payments",
+        save(DatasetDTO(name = "orders_daily", owningTeam = "team-payments", sourceSystem = "postgres",
             tags = listOf("orders", "daily"), sensitivity = DatasetSensitivity.INTERNAL, retentionDays = 90,
             refreshIntervalHours = 24,
             schemaFields = listOf(FieldDTO("order_id", "STRING"), FieldDTO("total_amount", "DECIMAL"))))
-        save(DatasetDTO(name = "clickstream_raw", owningTeam = "team-web",
+        save(DatasetDTO(name = "clickstream_raw", owningTeam = "team-web", sourceSystem = "kafka",
             tags = listOf("clickstream", "raw"), sensitivity = DatasetSensitivity.PUBLIC, retentionDays = 30,
             refreshIntervalHours = 1,
             schemaFields = listOf(FieldDTO("session_id", "STRING"), FieldDTO("event_ts", "TIMESTAMP"))))
-        save(DatasetDTO(name = "customer_pii", owningTeam = "team-identity",
+        save(DatasetDTO(name = "customer_pii", owningTeam = "team-identity", sourceSystem = "postgres",
             tags = listOf("customers", "pii"), sensitivity = DatasetSensitivity.RESTRICTED, retentionDays = 365,
             refreshIntervalHours = 24,
             schemaFields = listOf(FieldDTO("customer_id", "STRING"), FieldDTO("email", "STRING"))))
